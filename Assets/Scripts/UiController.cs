@@ -3,10 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class UiController : MonoBehaviour
 {
+    [SerializeField] private Sprite _pauseIcon;
+    [SerializeField] private Sprite _resumeIcon;
+
     private Action<string> OnBuildAreaHandler;
     private Action<string> OnBuildSingleStructureHandler;
     private Action<string> OnBuildRoadHandler;
@@ -23,7 +27,12 @@ public class UiController : MonoBehaviour
 
     public GameObject buildingMenuPanel;
     public Button openBuildMenuBtn;
+    public Button pauseBtn;
     public Button demolishBtn;
+
+    public GameObject taxesMenuPanel;
+    public Button closeTaxesMenuBtn;
+    public Button openTaxesMenuBtn;
 
     public GameObject zonesPanel;
     public GameObject facilitiesPanel;
@@ -34,20 +43,29 @@ public class UiController : MonoBehaviour
 
     public TextMeshProUGUI moneyValue;
     public TextMeshProUGUI populationValue;
+    public TextMeshProUGUI happinessValue;
 
     public UIStructureInfoPanelHelper structurePanelHelper;
+
+    public UnityAction PauseButtonPressed;
+
+    private bool _pause = false;
 
     // Start is called before the first frame update
     void Start()
     {
         cancleActionPanel.SetActive(false);
         buildingMenuPanel.SetActive(false);
+        taxesMenuPanel.SetActive(false);
         //buildResidentialAreaBtn.onClick.AddListener(OnBuildAreaCallback);
         cancleActionBtn.onClick.AddListener(OnCancleActionCallback);
         confirmActionBtn.onClick.AddListener(OnConfirmActionCallback);
         openBuildMenuBtn.onClick.AddListener(OnOpenBuildMenu);
+        openTaxesMenuBtn.onClick.AddListener(OnOpenTaxesMenu);
         demolishBtn.onClick.AddListener(OnDemolishHandler);
         closeBuildMenuBtn.onClick.AddListener(OnCloseMenuHandler);
+        closeTaxesMenuBtn.onClick.AddListener(OnCloseTaxesMenuHandler);
+        pauseBtn.onClick.AddListener(OnPauseHandler);
 
     }
 
@@ -69,12 +87,16 @@ public class UiController : MonoBehaviour
         OnConfirmActionHandler?.Invoke();
     }
 
-
-
     private void OnCloseMenuHandler()
     {
         AudioManager.Instance.PlayButtonClickedSound();
         buildingMenuPanel.SetActive(false);
+    }
+
+    private void OnCloseTaxesMenuHandler()
+    {
+        AudioManager.Instance.PlayButtonClickedSound();
+        taxesMenuPanel.SetActive(false);
     }
 
     private void OnDemolishHandler()
@@ -91,6 +113,28 @@ public class UiController : MonoBehaviour
         buildingMenuPanel.SetActive(true);
         
         PrepareBuildMenu();
+    }
+
+    private void OnOpenTaxesMenu()
+    {
+        AudioManager.Instance.PlayButtonClickedSound();
+        taxesMenuPanel.SetActive(true);
+    }
+
+    private void OnPauseHandler()
+    {
+        AudioManager.Instance.PlayButtonClickedSound();
+        if (!_pause)
+        {
+            pauseBtn.image.sprite = _resumeIcon;
+            _pause = true;
+        }
+        else
+        {
+            pauseBtn.image.sprite = _pauseIcon;
+            _pause = false;
+        }
+        PauseButtonPressed?.Invoke();
     }
 
     private void PrepareBuildMenu()
@@ -129,6 +173,11 @@ public class UiController : MonoBehaviour
     public void SetMoneyValue(int money)
     {
         moneyValue.text = money + "";
+    }
+
+    public void SetHappinessValue(int happiness)
+    {
+        happinessValue.text = (float)happiness / 100 + "";
     }
 
     // Update is called once per frame

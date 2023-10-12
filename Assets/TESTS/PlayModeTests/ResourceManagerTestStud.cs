@@ -10,6 +10,8 @@ public class ResourceManagerTestStud : MonoBehaviour, IResourceManager
 
     public int DemolitionPrice { get; }
 
+    public float HappinessCalculationInterval { get; }
+
     public void AddMoney(int amount)
     {
     }

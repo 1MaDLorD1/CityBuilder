@@ -12,7 +12,7 @@ public class PlayerDemolitionState : PlayerState
      
     public override void OnCancle()
     {
-        this.buildingManager.CancelModification();
+        this.buildingManager.CancleModification();
         this.gameManager.TransitionToState(this.gameManager.selectionState, null);
     }
 
@@ -30,19 +30,19 @@ public class PlayerDemolitionState : PlayerState
 
     public override void OnBuildArea(string structureName)
     {
-        this.buildingManager.CancelModification();
+        this.buildingManager.CancleModification();
         base.OnBuildArea(structureName);
     }
 
     public override void OnBuildRoad(string structureName)
     {
-        this.buildingManager.CancelModification();
+        this.buildingManager.CancleModification();
         base.OnBuildRoad(structureName);
     }
 
     public override void OnBuildSingleStructure(string structureName)
     {
-        this.buildingManager.CancelModification();
+        this.buildingManager.CancleModification();
         base.OnBuildSingleStructure(structureName);
     }
 
@@ -59,6 +59,7 @@ public class PlayerDemolitionState : PlayerState
 
     public override void EnterState(string variable)
     {
+        //this.buildingManager.CancelModification();
         this.buildingManager.PrepareBuildingManager(this.GetType());
     }
 }

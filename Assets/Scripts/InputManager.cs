@@ -126,4 +126,9 @@ public class InputManager : MonoBehaviour, IInputManager
     {
         OnPointerChangeHandler -= listener;
     }
+
+    public void AddListenerOnPointerSecondChangeEvent(Action<Vector3> listener)
+    {
+        OnPointerChangeHandler += listener;
+    }
 }

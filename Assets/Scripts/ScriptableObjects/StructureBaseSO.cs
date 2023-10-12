@@ -70,7 +70,7 @@ public abstract class StructureBaseSO : ScriptableObject
     public void AddWaterFacility(SingleFacilitySO facility)
     {
         if (waterProvider==null)
-            powerProvider = facility;
+            waterProvider = facility;
     }
 
     public void RemovePowerFacility()

@@ -14,20 +14,26 @@ public class PlayerBuildingZoneState : PlayerState
 
     public override void OnCancle()
     {
-        this.buildingManager.CancelModification();
+        this.buildingManager.CancleModification();
         this.gameManager.TransitionToState(this.gameManager.selectionState, null);
     }
 
     public override void OnBuildRoad(string structureName)
     {
-        this.buildingManager.CancelModification();
+        this.buildingManager.CancleModification();
         base.OnBuildRoad(structureName);
     }
 
     public override void OnBuildSingleStructure(string structureName)
     {
-        this.buildingManager.CancelModification();
+        this.buildingManager.CancleModification();
         base.OnBuildSingleStructure(structureName);
+    }
+
+    public override void OnDemolishAction()
+    {
+        this.buildingManager.CancleModification();
+        base.OnDemolishAction();
     }
 
     public override void OnConfirmAction()

@@ -7,8 +7,11 @@ public class MoneyHelper
 {
     private int money;
 
-    public MoneyHelper(int startMoneyAmount)
+    private ResourceManager _resourceManager;
+
+    public MoneyHelper(int startMoneyAmount, ResourceManager resourceManager)
     {
+        _resourceManager = resourceManager;
         this.money = startMoneyAmount;
     }
 
@@ -56,7 +59,9 @@ public class MoneyHelper
     {
         foreach (var structure in buildings)
         {
-            Money += structure.GetIncome();
+            int moneyWithoutTaxes = (int)(structure.GetIncome() + structure.GetIncome() * ( (float)_resourceManager.HappinessHelper.Happiness / 50 ));
+            Money += (int)(moneyWithoutTaxes + _resourceManager.PopulationHelper.Population * ((float)_resourceManager.TaxesManager.Taxes / 100));
         }
+        Debug.Log(_resourceManager.HappinessHelper.Happiness);
     }
 }

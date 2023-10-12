@@ -6,33 +6,45 @@ using UnityEngine;
 public class ResourceManager : MonoBehaviour, IResourceManager
 {
     [SerializeField]
+    private TaxesManager taxesManager;
+    [SerializeField]
     private int startMoneyAmount = 5000;
     [SerializeField]
     private int demolitionPrice = 20;
     [SerializeField]
     private float moneyCalculationInterval = 2;
+    [SerializeField]
+    private float happinessCalculationInterval = 10;
     MoneyHelper moneyHelper;
     PopulationHelper populationHelper;
+    HappinessHelper happinessHelper;
     private BuildingManager buildingManger;
     public UiController uiController;
 
-    public int StartMoneyAmount { get => startMoneyAmount;}
-    public float MoneyCalculationInterval { get => moneyCalculationInterval;}
+    public HappinessHelper HappinessHelper {  get { return happinessHelper; } }
+    public PopulationHelper PopulationHelper { get { return populationHelper; } }
+    public TaxesManager TaxesManager { get { return taxesManager; } }
+
+    public int StartMoneyAmount { get => startMoneyAmount; }
+    public float MoneyCalculationInterval { get => moneyCalculationInterval; }
+    public float HappinessCalculationInterval { get => happinessCalculationInterval; }
 
     public int DemolitionPrice => demolitionPrice;
 
     // Start is called before the first frame update
     void Start()
     {
-        moneyHelper = new MoneyHelper(startMoneyAmount);
+        moneyHelper = new MoneyHelper(startMoneyAmount, this);
         populationHelper = new PopulationHelper();
+        happinessHelper = new HappinessHelper(this);
         UpdateUI();
     }
 
     public void PrepareResourceManager(BuildingManager buildingManager)
     {
         this.buildingManger = buildingManager;
-        InvokeRepeating("CalculateTownIncome",0,MoneyCalculationInterval);
+        InvokeRepeating("CalculateTownIncome", 0, MoneyCalculationInterval);
+        InvokeRepeating("CalculateTownHappiness", 0, HappinessCalculationInterval);
     }
 
     public bool SpendMoney(int amount)
@@ -77,9 +89,10 @@ public class ResourceManager : MonoBehaviour, IResourceManager
         }
     }
 
-    private void OnDisable()
+    public void CalculateTownHappiness()
     {
-        CancelInvoke();  
+        happinessHelper.CalculateHappiness(buildingManger.GetAllStructures());
+        UpdateUI();
     }
 
     public void AddMoney(int amount)
@@ -92,6 +105,7 @@ public class ResourceManager : MonoBehaviour, IResourceManager
     {
         uiController.SetMoneyValue(moneyHelper.Money);
         uiController.SetPopulationValue(populationHelper.Population);
+        uiController.SetHappinessValue(happinessHelper.Happiness);
     }
 
     // Update is called once per frame
@@ -116,6 +130,33 @@ public class ResourceManager : MonoBehaviour, IResourceManager
     {
         populationHelper.ReducePopulation(value);
         UpdateUI();
+    }
 
+    private void OnEnable()
+    {
+        uiController.PauseButtonPressed += MoneyCalculationIntervalUpdate;
+    }
+
+    private void OnDisable()
+    {
+        uiController.PauseButtonPressed -= MoneyCalculationIntervalUpdate;
+        CancelInvoke();
+    }
+
+    private void MoneyCalculationIntervalUpdate()
+    {
+        CancelInvoke();
+        if (moneyCalculationInterval == 2) moneyCalculationInterval = 0;
+        else
+        {
+            moneyCalculationInterval = 2;
+            InvokeRepeating("CalculateTownIncome", 2, MoneyCalculationInterval);
+        }
+        if (happinessCalculationInterval == 10) happinessCalculationInterval = 0;
+        else
+        {
+            happinessCalculationInterval = 10;
+            InvokeRepeating("CalculateTownHappiness", 10, HappinessCalculationInterval);
+        }
     }
 }

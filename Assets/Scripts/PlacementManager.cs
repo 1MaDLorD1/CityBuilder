@@ -8,12 +8,23 @@ public class PlacementManager : MonoBehaviour, IPlacementManager
     public Transform ground;
     public Material transparentMaterial;
     private Dictionary<GameObject, Material[]> originalMaterials = new Dictionary<GameObject, Material[]>();
+    private WorldManager worldManager;
+    // Start is called before the first frame update
+    void Start()
+    {
 
-    //public void CreateBuilding(Vector3 gridPosition, GridStructure grid, GameObject buildingPrefab)
-    //{
-    //    GameObject newStructure = Instantiate(buildingPrefab, ground.position + gridPosition, Quaternion.identity);
-    //    grid.PlaceStructureOnTheGrid(newStructure, gridPosition);
-    //}
+    }
+
+    public void PreparePlacementManager(WorldManager worldManager)
+    {
+        this.worldManager = worldManager;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     public GameObject CreateGhostStructure(Vector3 gridPosition, GameObject buildingPrefab, RotationValue rotationValue = RotationValue.R0)
     {
@@ -25,7 +36,7 @@ public class PlacementManager : MonoBehaviour, IPlacementManager
 
     public GameObject PlaceStructureOnTheMap(Vector3 gridPosition, GameObject buildingPrefab, RotationValue rotationValue)
     {
-        GameObject newStructure = Instantiate(buildingPrefab, ground.position + gridPosition, Quaternion.identity);
+        GameObject newStructure =  Instantiate(buildingPrefab, ground.position + gridPosition, Quaternion.identity);
         Vector3 rotation = Vector3.zero;
         switch (rotationValue)
         {
@@ -74,7 +85,7 @@ public class PlacementManager : MonoBehaviour, IPlacementManager
     {
         foreach (var structure in structureCollection)
         {
-
+            worldManager.DestroyNatureAtLocation(structure.transform.position);
             ResetBuildingLook(structure);
 
         }
@@ -107,20 +118,31 @@ public class PlacementManager : MonoBehaviour, IPlacementManager
         Destroy(structure);
     }
 
+
+    //public void RemoveBuilding(Vector3 gridPosition, GridStructure grid)
+    //{
+    //    var structure = grid.GetStructureFromTheGrid(gridPosition);
+    //    if (structure != null)
+    //    {
+    //        Destroy(structure);
+    //        grid.RemoveStructureFromTheGrid(gridPosition);
+    //    }
+    //}
+
     public void SetBuildingForDemolition(GameObject structureToDemolish)
     {
         Color colorToSet = Color.red;
         ModifyStructurePrefabLook(structureToDemolish, colorToSet);
     }
 
-    public GameObject MoveStructureOnTheMap(Vector3Int positionToPlaceStructure, GameObject gameObjectToReuse, GameObject prefab)
+    public GameObject MoveStructureOnTheMap(Vector3Int positionToPlaceStructure, GameObject gameObjectsToReuse, GameObject prefab)
     {
-        gameObjectToReuse.transform.position = positionToPlaceStructure;
-        gameObjectToReuse.transform.rotation = prefab.transform.rotation;
-        for (int i = 0; i < gameObjectToReuse.transform.childCount; i++)
+        gameObjectsToReuse.transform.position = positionToPlaceStructure;
+        gameObjectsToReuse.transform.rotation = prefab.transform.rotation;
+        for (int i = 0; i < gameObjectsToReuse.transform.childCount; i++)
         {
-            gameObjectToReuse.transform.GetChild(i).rotation = prefab.transform.GetChild(i).rotation;
+            gameObjectsToReuse.transform.GetChild(i).rotation = prefab.transform.GetChild(i).rotation;
         }
-        return gameObjectToReuse;
+        return gameObjectsToReuse;
     }
 }

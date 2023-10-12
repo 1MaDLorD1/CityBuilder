@@ -3,20 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingManager
+public class BuildingManager 
 {
     GridStructure grid;
     IPlacementManager placementManager;
     StructureRepository structureRepository;
-    StructureModificationHelper helper;
+    StructureModificationHelper helper; 
+    
 
-    public BuildingManager(int cellSize, int width, int length, IPlacementManager placementManager, StructureRepository structureRepository, IResourceManager resourceManager)
+    public BuildingManager(GridStructure grid,IPlacementManager placementManager, StructureRepository structureRepository, IResourceManager resourceManager)
     {
-        this.grid = new GridStructure(cellSize, width, length);
+        this.grid = grid;
         this.placementManager = placementManager;
         this.structureRepository = structureRepository;
         StructureModificationFactory.PrepareFactory(structureRepository, grid, placementManager, resourceManager);
-
+        
     }
 
     public void PrepareBuildingManager(Type classType)
@@ -34,14 +35,14 @@ public class BuildingManager
         helper.ConfirmModifications();
     }
 
+    public void CancleModification()
+    {
+        helper.CancleModifications();
+    }
+
     public IEnumerable<StructureBaseSO> GetAllStructures()
     {
         return grid.GetAllStructures();
-    }
-
-    public void CancelModification()
-    {
-        helper.CancleModifications();
     }
 
     public void PrepareStructureForDemolitionAt(Vector3 inputPosition)
@@ -49,12 +50,14 @@ public class BuildingManager
         helper.PrepareStructureForPlacement(inputPosition, "", StructureType.None);
     }
 
+
     public GameObject CheckForStructureInGrid(Vector3 inputPosition)
     {
-        Vector3 gridPositoion = grid.CalculateGridPosition(inputPosition);
-        if (grid.IsCellTaken(gridPositoion))
+        Vector3 gridPosition = grid.CalculateGridPosition(inputPosition);
+        if (grid.IsCellTaken(gridPosition))
         {
-            return grid.GetStructureFromTheGrid(gridPositoion);
+            return grid.GetStructureFromTheGrid(gridPosition);
+
         }
         return null;
     }
@@ -88,3 +91,5 @@ public class BuildingManager
         return null;
     }
 }
+
+

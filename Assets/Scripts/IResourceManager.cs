@@ -1,6 +1,7 @@
 ﻿public interface IResourceManager
 {
     float MoneyCalculationInterval { get;}
+    float HappinessCalculationInterval { get; }
     int StartMoneyAmount { get;}
     int DemolitionPrice { get;}
 

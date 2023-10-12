@@ -9,6 +9,7 @@ public interface IInputManager
     void AddListenerOnPointerChangeEvent(Action<Vector3> listener);
     void AddListenerOnPointerSecondDownEvent(Action<Vector3> listener);
     void AddListenerOnPointerSecondUpEvent(Action listener);
+    void AddListenerOnPointerSecondChangeEvent(Action<Vector3> listener);
     void RemoveListenerOnPointerDownEvent(Action<Vector3> listener);
     void RemoveListenerOnPointerSecondChangeEvent(Action<Vector3> listener);
     void RemoveListenerOnPointerSecondUpEvent(Action listener);
