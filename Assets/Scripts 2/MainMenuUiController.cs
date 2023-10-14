@@ -17,12 +17,12 @@ public class MainMenuUiController : MonoBehaviour
 
     private void OnStartGameHandler()
     {
-        Debug.Log("Kek");
+        MainMenuAudioManager.Instance.PlayButtonClickedSound();
         BuildingMechanicPrototype.Load();
     }
 
     private void OnSettingsHandler()
     {
-
+        MainMenuAudioManager.Instance.PlayButtonClickedSound();
     }
 }
