@@ -26,14 +26,29 @@ public class StructureRepository : MonoBehaviour
         return modelDataCollection.zonesList.Select(zone => zone.buildingName).ToList();
     }
 
+    public List<int> GetZoneCosts()
+    {
+        return modelDataCollection.zonesList.Select(zone => zone.placementCost).ToList();
+    }
+
     public List<string> GetSingleStructureNames()
     {
         return modelDataCollection.singleStructureList.Select(facility => facility.buildingName).ToList();
     }
 
+    public List<int> GetSingleStructureCosts()
+    {
+        return modelDataCollection.singleStructureList.Select(facility => facility.placementCost).ToList();
+    }
+
     public string GetRoadStructureName()
     {
         return modelDataCollection.roadStructure.buildingName;
+    }
+
+    public int GetRoadStructureCost()
+    {
+        return modelDataCollection.roadStructure.placementCost;
     }
 
     public GameObject GetBuildingPrefabByName(string structureName, StructureType structureType)

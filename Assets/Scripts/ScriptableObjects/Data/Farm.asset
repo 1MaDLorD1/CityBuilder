@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: "\u0424\u0435\u0440\u043C\u0430"
   prefab: {fileID: 8469675459621438219, guid: 1d658b7a489918c4ebade52e9c51befa, type: 3}
-  placementCost: 50
+  placementCost: 100
   upkeepCost: 0
-  income: 2
+  income: 1
   requireRoadAccess: 1
   requireWater: 1
   requirePower: 1

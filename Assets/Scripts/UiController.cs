@@ -139,9 +139,9 @@ public class UiController : MonoBehaviour
 
     private void PrepareBuildMenu()
     {
-        CreateButtonsInPanel(zonesPanel.transform, structureRepository.GetZoneNames(),OnBuildAreaCallback);
-        CreateButtonsInPanel(facilitiesPanel.transform, structureRepository.GetSingleStructureNames(),OnBuildSingleStructureCallback);
-        CreateButtonsInPanel(roadsPanel.transform, new List<string>() { structureRepository.GetRoadStructureName() },OnBuildRoadCallback);
+        CreateButtonsInPanel(zonesPanel.transform, structureRepository.GetZoneNames(), structureRepository.GetZoneCosts(), OnBuildAreaCallback);
+        CreateButtonsInPanel(facilitiesPanel.transform, structureRepository.GetSingleStructureNames(), structureRepository.GetSingleStructureCosts(), OnBuildSingleStructureCallback);
+        CreateButtonsInPanel(roadsPanel.transform, new List<string>() { structureRepository.GetRoadStructureName() }, new List<int>() { structureRepository.GetRoadStructureCost() }, OnBuildRoadCallback);
     }
 
     public void SetPopulationValue(int population)
@@ -149,7 +149,7 @@ public class UiController : MonoBehaviour
         populationValue.text = population + "";
     }
 
-    private void CreateButtonsInPanel(Transform panelTransform, List<string> dataToShow, Action<string> callback)
+    private void CreateButtonsInPanel(Transform panelTransform, List<string> dataToShow, List<int> placemantCost, Action<string> callback)
     {
         if (dataToShow.Count > panelTransform.childCount)
         {
@@ -164,8 +164,10 @@ public class UiController : MonoBehaviour
             var button = panelTransform.GetChild(i).GetComponent<Button>();
             if (button != null)
             {
-                button.GetComponentInChildren<TextMeshProUGUI>().text = dataToShow[i];
-                button.onClick.AddListener(()=> callback(button.GetComponentInChildren<TextMeshProUGUI>().text));
+                var buttonTexts = button.GetComponentsInChildren<TextMeshProUGUI>();
+                buttonTexts[0].text = dataToShow[i];
+                buttonTexts[1].text = placemantCost[i].ToString() + "$";
+                button.onClick.AddListener(()=> callback(button.GetComponentsInChildren<TextMeshProUGUI>()[0].text));
             }
         }
     }

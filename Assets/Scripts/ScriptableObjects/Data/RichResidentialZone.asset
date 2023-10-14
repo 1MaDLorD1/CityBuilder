@@ -15,9 +15,9 @@ MonoBehaviour:
   buildingName: "\u0414\u043E\u0440\u043E\u0433\u0430\u044F \u0436\u0438\u043B\u0430\u044F
     \u0437\u043E\u043D\u0430"
   prefab: {fileID: 3270619391403704889, guid: 6e71b3ebef897534692cebd711e56073, type: 3}
-  placementCost: 100
+  placementCost: 3000
   upkeepCost: 0
-  income: 20
+  income: 100
   requireRoadAccess: 1
   requireWater: 1
   requirePower: 1
