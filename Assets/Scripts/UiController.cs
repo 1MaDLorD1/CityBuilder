@@ -10,6 +10,17 @@ public class UiController : MonoBehaviour
 {
     [SerializeField] private Sprite _pauseIcon;
     [SerializeField] private Sprite _resumeIcon;
+    [SerializeField] private Sprite _lowHappinessIcon;
+    [SerializeField] private Sprite _highHappinessIcon;
+    [SerializeField] private Image _happinessImage;
+    [SerializeField] private Color _highHappinesscColor;
+    [SerializeField] private Color _lowHappinesscColor;
+
+    public Sprite LowHappinessIcon { get => _lowHappinessIcon; }
+    public Sprite HighHappinessIcon { get => _highHappinessIcon; }
+    public Image HappinessImage { get => _happinessImage; set => _happinessImage = value; }
+    public Color HighHappinesscColor { get => _highHappinesscColor; }
+    public Color LowHappinesscColor { get => _lowHappinesscColor; }
 
     private Action<string> OnBuildAreaHandler;
     private Action<string> OnBuildSingleStructureHandler;
@@ -30,6 +41,13 @@ public class UiController : MonoBehaviour
     public Button pauseBtn;
     public Button demolishBtn;
 
+    public GameObject loseMenuPanel;
+    public Button continueBtn;
+
+    public GameObject menuPanel;
+    public Button menuBtn;
+    public Button continueMenuBtn;
+
     public GameObject taxesMenuPanel;
     public Button closeTaxesMenuBtn;
     public Button openTaxesMenuBtn;
@@ -48,6 +66,9 @@ public class UiController : MonoBehaviour
     public UIStructureInfoPanelHelper structurePanelHelper;
 
     public UnityAction PauseButtonPressed;
+    public UnityAction ContinueButtonPressed;
+    public UnityAction MenuButtonPressed;
+    public UnityAction ContinueMenuButtonPressed;
 
     private bool _pause = false;
 
@@ -57,6 +78,8 @@ public class UiController : MonoBehaviour
         cancleActionPanel.SetActive(false);
         buildingMenuPanel.SetActive(false);
         taxesMenuPanel.SetActive(false);
+        loseMenuPanel.SetActive(false);
+        menuPanel.SetActive(false);
         //buildResidentialAreaBtn.onClick.AddListener(OnBuildAreaCallback);
         cancleActionBtn.onClick.AddListener(OnCancleActionCallback);
         confirmActionBtn.onClick.AddListener(OnConfirmActionCallback);
@@ -66,7 +89,30 @@ public class UiController : MonoBehaviour
         closeBuildMenuBtn.onClick.AddListener(OnCloseMenuHandler);
         closeTaxesMenuBtn.onClick.AddListener(OnCloseTaxesMenuHandler);
         pauseBtn.onClick.AddListener(OnPauseHandler);
+        continueBtn.onClick.AddListener(OnContinueHandler);
+        menuBtn.onClick.AddListener(OnMenuHandler);
+        continueMenuBtn.onClick.AddListener(OnContinueMenuHandler);
+    }
 
+    private void OnMenuHandler()
+    {
+        AudioManager.Instance.PlayButtonClickedSound();
+        MenuButtonPressed?.Invoke();
+        menuPanel.SetActive(true);
+    }
+
+    private void OnContinueMenuHandler()
+    {
+        AudioManager.Instance.PlayButtonClickedSound();
+        ContinueMenuButtonPressed?.Invoke();
+        menuPanel.SetActive(false);
+    }
+
+    private void OnContinueHandler()
+    {
+        AudioManager.Instance.PlayButtonClickedSound();
+        ContinueButtonPressed?.Invoke();
+        loseMenuPanel.SetActive(false);
     }
 
     public void HideStructureInfo()

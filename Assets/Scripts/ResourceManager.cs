@@ -15,6 +15,8 @@ public class ResourceManager : MonoBehaviour, IResourceManager
     private float moneyCalculationInterval = 2;
     [SerializeField]
     private float happinessCalculationInterval = 10;
+    [SerializeField]
+    private int moneyAddingAfterContinue = 5000;
     MoneyHelper moneyHelper;
     PopulationHelper populationHelper;
     HappinessHelper happinessHelper;
@@ -43,6 +45,8 @@ public class ResourceManager : MonoBehaviour, IResourceManager
     public void PrepareResourceManager(BuildingManager buildingManager)
     {
         this.buildingManger = buildingManager;
+        moneyCalculationInterval = 2;
+        happinessCalculationInterval = 10;
         InvokeRepeating("CalculateTownIncome", 0, MoneyCalculationInterval);
         InvokeRepeating("CalculateTownHappiness", 0, HappinessCalculationInterval);
     }
@@ -69,6 +73,8 @@ public class ResourceManager : MonoBehaviour, IResourceManager
     private void ReloadGame()
     {
         Debug.Log("End the game");
+        MoneyCalculationIntervalUpdate();
+        uiController.loseMenuPanel.SetActive(true);
     }
 
     public bool CanIBuyIt(int amount)
@@ -92,6 +98,18 @@ public class ResourceManager : MonoBehaviour, IResourceManager
     public void CalculateTownHappiness()
     {
         happinessHelper.CalculateHappiness(buildingManger.GetAllStructures());
+
+        if (happinessHelper.Happiness < 0)
+        {
+            uiController.HappinessImage.sprite = uiController.LowHappinessIcon;
+            uiController.HappinessImage.color = uiController.LowHappinesscColor;
+        }
+        else
+        {
+            uiController.HappinessImage.sprite = uiController.HighHappinessIcon;
+            uiController.HappinessImage.color = uiController.HighHappinesscColor;
+        }
+
         UpdateUI();
     }
 
@@ -135,12 +153,34 @@ public class ResourceManager : MonoBehaviour, IResourceManager
     private void OnEnable()
     {
         uiController.PauseButtonPressed += MoneyCalculationIntervalUpdate;
+        uiController.ContinueButtonPressed += OnContinueButtonPressed;
+        uiController.MenuButtonPressed += OnMenuButtonPressed;
+        uiController.ContinueMenuButtonPressed += OnContinueMenuButtonPressed;
     }
 
     private void OnDisable()
     {
         uiController.PauseButtonPressed -= MoneyCalculationIntervalUpdate;
+        uiController.ContinueButtonPressed -= OnContinueButtonPressed;
+        uiController.MenuButtonPressed -= OnMenuButtonPressed;
+        uiController.ContinueMenuButtonPressed -= OnContinueMenuButtonPressed;
         CancelInvoke();
+    }
+
+    private void OnMenuButtonPressed()
+    {
+        MoneyCalculationIntervalUpdate();
+    }
+
+    private void OnContinueMenuButtonPressed()
+    {
+        MoneyCalculationIntervalUpdate();
+    }
+
+    private void OnContinueButtonPressed()
+    {
+        MoneyCalculationIntervalUpdate();
+        AddMoney(moneyAddingAfterContinue);
     }
 
     private void MoneyCalculationIntervalUpdate()
