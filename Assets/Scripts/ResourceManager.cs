@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ResourceManager : MonoBehaviour, IResourceManager
 {
@@ -32,6 +33,8 @@ public class ResourceManager : MonoBehaviour, IResourceManager
     public float HappinessCalculationInterval { get => happinessCalculationInterval; }
 
     public int DemolitionPrice => demolitionPrice;
+
+    public UnityAction ContinueButtonPressed;
 
     // Start is called before the first frame update
     void Start()
@@ -179,8 +182,9 @@ public class ResourceManager : MonoBehaviour, IResourceManager
 
     private void OnContinueButtonPressed()
     {
-        MoneyCalculationIntervalUpdate();
+        ContinueButtonPressed?.Invoke();
         AddMoney(moneyAddingAfterContinue);
+        MoneyCalculationIntervalUpdate();
     }
 
     private void MoneyCalculationIntervalUpdate()

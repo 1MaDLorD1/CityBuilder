@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
 
 public class MainMenuButton : MonoBehaviour
 {
     [SerializeField] private Button[] mainMenuBtn;
     [SerializeField] private Button[] againBtn;
+    [SerializeField] private ResourceManager resourceManager;
 
     void Start()
     {
@@ -16,6 +18,21 @@ public class MainMenuButton : MonoBehaviour
             mainMenuBtn[i].onClick.AddListener(OnMainMenuHandler);
             againBtn[i].onClick.AddListener(OnAgainHandler);
         }
+    }
+
+    private void OnEnable()
+    {
+        resourceManager.ContinueButtonPressed += OnContinueHandler;
+    }
+
+    private void OnDestroy()
+    {
+        resourceManager.ContinueButtonPressed -= OnContinueHandler;
+    }
+
+    private void OnContinueHandler()
+    {
+        YandexGame.RewVideoShow(0);
     }
 
     private void OnMainMenuHandler()
