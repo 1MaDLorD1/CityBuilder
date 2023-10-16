@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdc45f24efc78d249b109c18daae9a63, type: 3}
   m_Name: PowerPlant
   m_EditorClassIdentifier: 
-  buildingName: "\u041C\u0435\u043B\u044C\u043D\u0438\u0446\u0430"
+  buildingName: "\u0412\u0435\u0442\u0440\u044F\u043A"
   prefab: {fileID: 5281755976055223100, guid: 846fc27e966e51d4e852d27ce2a0c980, type: 3}
-  placementCost: 5000
+  placementCost: 1
   upkeepCost: 0
   income: 0
   requireRoadAccess: 1

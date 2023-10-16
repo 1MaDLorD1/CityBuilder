@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdc45f24efc78d249b109c18daae9a63, type: 3}
   m_Name: WaterTower
   m_EditorClassIdentifier: 
-  buildingName: "\u0412\u043E\u0434\u043E\u043A\u0430\u043D\u0430\u043B"
+  buildingName: "\u0412\u043E\u0434\u043E\u043D\u0430\u043F\u043E\u0440\u043D\u0430\u044F
+    \u0431\u0430\u0448\u043D\u044F"
   prefab: {fileID: 7215406229071946483, guid: 87d54e03267a8b94597ffda66deac76a, type: 3}
   placementCost: 3500
   upkeepCost: 0

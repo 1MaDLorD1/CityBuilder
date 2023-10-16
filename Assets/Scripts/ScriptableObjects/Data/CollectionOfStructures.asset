@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roadStructure: {fileID: 11400000, guid: 2386c7b1b7a456e499155a627520efb7, type: 2}
   singleStructureList:
-  - {fileID: 11400000, guid: f03abf1985dc5b045a3984d4b7abb63b, type: 2}
+  - {fileID: 11400000, guid: 46a968f6f321caa4aa33ef93c2668200, type: 2}
+  - {fileID: 11400000, guid: 783118320686b6f44b2870f1cef17ee1, type: 2}
   - {fileID: 11400000, guid: 85d9be7ed6cdb0344bccbf2c62acd82e, type: 2}
+  - {fileID: 11400000, guid: 48477d238804e3044b11f6a3049759d4, type: 2}
+  - {fileID: 11400000, guid: 5038e4937387a56428232f0dc87ed984, type: 2}
   zonesList:
   - {fileID: 11400000, guid: c79afd98eca55e94aa284de4026e4229, type: 2}
   - {fileID: 11400000, guid: 12c4d86193f84314492c9a84d81bd4cd, type: 2}
