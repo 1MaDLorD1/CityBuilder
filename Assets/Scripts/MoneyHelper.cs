@@ -16,7 +16,7 @@ public class MoneyHelper
     }
 
     public int Money { get => money; 
-        private set 
+        set 
         { 
             if(value < 0)
             {
@@ -62,6 +62,5 @@ public class MoneyHelper
             int moneyWithoutTaxes = (int)(structure.GetIncome() + structure.GetIncome() * ( (float)_resourceManager.HappinessHelper.Happiness / 50 ));
             Money += (int)(moneyWithoutTaxes + _resourceManager.PopulationHelper.Population * ((float)_resourceManager.TaxesManager.Taxes / 100));
         }
-        Debug.Log(_resourceManager.HappinessHelper.Happiness);
     }
 }

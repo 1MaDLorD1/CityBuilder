@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     public GameObject placementManagerGameObject;
     private IPlacementManager placementManager;
     public StructureRepository structureRepository;
-    public IInputManager inputManger;
+    public InputManager inputManger;
     public UiController uiController;
     public int width, length;
     public CameraMovement cameraMovement;
@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     public PlayerBuildingRoadState buildingRoadState;
     public PlayerBuildingZoneState buildingAreaState;
     public PlayerState State { get => state;}
+    public BuildingManager BuildingManager { get => buildingManager; set => buildingManager = value;  }
+    public IResourceManager ResourceManager { get => resourceManager; }
 
     public GameObject resourceManagerGameObject;
     private IResourceManager resourceManager;
@@ -32,35 +34,44 @@ public class GameManager : MonoBehaviour
     public WorldManager worldManager;
     private void Awake()
     {
-        
+
 
 #if (UNITY_EDITOR && TEST) || !(UNITY_IOS || UNITY_ANDROID)
-        inputManger = gameObject.AddComponent<InputManager>();
+        //inputManger = gameObject.AddComponent<InputManager>();
 #endif
 #if (UNITY_IOS || UNITY_ANDROID)
 
 #endif
-    }
-
-    private void PrepareStates()
-    {
-        buildingManager = new BuildingManager(worldManager.Grid, placementManager, structureRepository, resourceManager);
-        resourceManager.PrepareResourceManager(buildingManager);
-        selectionState = new PlayerSelectionState(this, buildingManager);
-        demolishState = new PlayerDemolitionState(this, buildingManager);
-        buildingSingleStructureState = new PlayerBuildingSingleStructureState(this, buildingManager);
-        buildingAreaState = new PlayerBuildingZoneState(this, buildingManager);
-        buildingRoadState = new PlayerBuildingRoadState(this, buildingManager);
-        state = selectionState;
-    }
-
-    void Start()
-    {
         placementManager = placementManagerGameObject.GetComponent<IPlacementManager>();
         placementManager.PreparePlacementManager(worldManager);
         resourceManager = resourceManagerGameObject.GetComponent<IResourceManager>();
         worldManager.PrepareWorld(cellSize, width, length);
         PrepareStates();
+    }
+
+    private void PrepareStates()
+    {
+        if (buildingManager == null)
+        {
+            worldManager.PrepareTrees();
+            buildingManager = new BuildingManager(worldManager.Grid, placementManager, structureRepository, ResourceManager);
+        }
+        resourceManager.PrepareResourceManager(BuildingManager);
+        selectionState = new PlayerSelectionState(this, BuildingManager);
+        demolishState = new PlayerDemolitionState(this, BuildingManager);
+        buildingSingleStructureState = new PlayerBuildingSingleStructureState(this, BuildingManager);
+        buildingAreaState = new PlayerBuildingZoneState(this, BuildingManager);
+        buildingRoadState = new PlayerBuildingRoadState(this, BuildingManager);
+        state = selectionState;
+    }
+
+    void Start()
+    {
+        if (buildingRoadState.RoadsPositions.Count != 0)
+        {
+            buildingManager.PlaceRoadsOnStart(buildingRoadState.RoadsPositions);
+            worldManager.PrepareTreesAgain();
+        }
         PreapreGameComponents();
         AssignInputListeners();
         AssignUiControllerListeners();
@@ -97,6 +108,4 @@ public class GameManager : MonoBehaviour
         this.state = newState;
         this.state.EnterState(variable);
     }
-
-
 }

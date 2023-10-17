@@ -17,12 +17,21 @@ public class BuildingManager
         this.placementManager = placementManager;
         this.structureRepository = structureRepository;
         StructureModificationFactory.PrepareFactory(structureRepository, grid, placementManager, resourceManager);
-        
     }
 
     public void PrepareBuildingManager(Type classType)
     {
         helper = StructureModificationFactory.GetHelper(classType);
+    }
+
+    public void PlaceRoadsOnStart(List<Vector3> roadsPositions)
+    {
+        for (int i = 0; i < roadsPositions.Count; i++)
+        {
+            ((RoadPlacementModificationHelper)helper).PrepareStructureForPlacementOnStart(roadsPositions[i], "Дорога", StructureType.Road);
+        }
+
+        ((RoadPlacementModificationHelper)helper).ConfirmModifications();
     }
 
     public void PrepareStructureForModification(Vector3 inputPosition, string structureName, StructureType structureType)

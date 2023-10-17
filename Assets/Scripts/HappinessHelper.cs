@@ -17,7 +17,7 @@ public class HappinessHelper
     public int Happiness
     {
         get { return _happiness; }
-        private set { _happiness = value; }
+        set { _happiness = value; }
     }
 
     public void CalculateHappiness(IEnumerable<StructureBaseSO> buildings)

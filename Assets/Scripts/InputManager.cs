@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 
 public class InputManager : MonoBehaviour, IInputManager
 {
+    [SerializeField] private UiController uiController;
+
     private Action<Vector3> OnPointerSecondChangeHandler;
     private Action OnPointerSecondUpHandler;
     private Action<Vector3> OnPointerDownHandler;
@@ -67,12 +69,17 @@ public class InputManager : MonoBehaviour, IInputManager
 
     private void GetPanningPointer()
     {
-        if (Input.GetMouseButton(1))
+        bool moveCamera = true;
+
+        if(uiController.cancleActionPanel.activeSelf || uiController.buildingMenuPanel.activeSelf || uiController.taxesMenuPanel.activeSelf
+            || uiController.loseMenuPanel.activeSelf || uiController.menuPanel.activeSelf) moveCamera = false;
+
+        if (Input.GetMouseButton(0) && moveCamera)
         {
             var position = Input.mousePosition;
             OnPointerSecondChangeHandler?.Invoke(position);
         }
-        if (Input.GetMouseButtonUp(1))
+        if (Input.GetMouseButtonUp(0) && moveCamera)
         {
             OnPointerSecondUpHandler?.Invoke();
         }

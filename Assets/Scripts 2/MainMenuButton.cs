@@ -10,6 +10,8 @@ public class MainMenuButton : MonoBehaviour
     [SerializeField] private Button[] mainMenuBtn;
     [SerializeField] private Button[] againBtn;
     [SerializeField] private ResourceManager resourceManager;
+    [SerializeField] private AudioSource _musicAudioSource;
+    [SerializeField] private AudioSource _soundsAudioSource;
 
     void Start()
     {
@@ -38,12 +40,12 @@ public class MainMenuButton : MonoBehaviour
     private void OnMainMenuHandler()
     {
         AudioManager.Instance.PlayButtonClickedSound();
-        MainMenu.Load();
+        MainMenu.Load((_musicAudioSource.volume, _soundsAudioSource.volume));
     }
 
     private void OnAgainHandler()
     {
         AudioManager.Instance.PlayButtonClickedSound();
-        BuildingMechanicPrototype.Load();
+        BuildingMechanicPrototype.Load((_musicAudioSource.volume, _soundsAudioSource.volume));
     }
 }

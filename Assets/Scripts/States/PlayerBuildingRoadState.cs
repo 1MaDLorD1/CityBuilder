@@ -6,6 +6,9 @@ public class PlayerBuildingRoadState : PlayerState
 {
     BuildingManager buildingManager;
     string structureName;
+    private List<Vector3> roadsPositions = new List<Vector3>();
+
+    public List<Vector3> RoadsPositions { get => roadsPositions; set => roadsPositions = value; }
 
     public PlayerBuildingRoadState(GameManager gameManager, BuildingManager buildingManager) : base(gameManager)
     {
@@ -52,6 +55,7 @@ public class PlayerBuildingRoadState : PlayerState
 
     public override void OnInputPointerDown(Vector3 position)
     {
+        roadsPositions.Add(position);
         this.buildingManager.PrepareStructureForModification(position, this.structureName, StructureType.Road);
     }
 }

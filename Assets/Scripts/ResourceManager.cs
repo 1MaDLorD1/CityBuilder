@@ -34,10 +34,12 @@ public class ResourceManager : MonoBehaviour, IResourceManager
 
     public int DemolitionPrice => demolitionPrice;
 
+    public MoneyHelper MoneyHelper { get => moneyHelper; }
+
     public UnityAction ContinueButtonPressed;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         moneyHelper = new MoneyHelper(startMoneyAmount, this);
         populationHelper = new PopulationHelper();
@@ -60,7 +62,7 @@ public class ResourceManager : MonoBehaviour, IResourceManager
         {
             try
             {
-                moneyHelper.ReduceMoney(amount);
+                MoneyHelper.ReduceMoney(amount);
                 UpdateUI();
                 return true;
             }
@@ -82,14 +84,14 @@ public class ResourceManager : MonoBehaviour, IResourceManager
 
     public bool CanIBuyIt(int amount)
     {
-        return moneyHelper.Money >= amount;
+        return MoneyHelper.Money >= amount;
     }
 
     public void CalculateTownIncome()
     {
         try
         {
-            moneyHelper.CalculateMoney(buildingManger.GetAllStructures());
+            MoneyHelper.CalculateMoney(buildingManger.GetAllStructures());
             UpdateUI();
         }
         catch (MoneyException)
@@ -118,13 +120,13 @@ public class ResourceManager : MonoBehaviour, IResourceManager
 
     public void AddMoney(int amount)
     {
-        moneyHelper.AddMoney(amount);
+        MoneyHelper.AddMoney(amount);
         UpdateUI();
     }
 
     private void UpdateUI()
     {
-        uiController.SetMoneyValue(moneyHelper.Money);
+        uiController.SetMoneyValue(MoneyHelper.Money);
         uiController.SetPopulationValue(populationHelper.Population);
         uiController.SetHappinessValue(happinessHelper.Happiness);
     }
@@ -137,7 +139,7 @@ public class ResourceManager : MonoBehaviour, IResourceManager
 
     public int HowManyStructuresCanIPlace(int placementCost, int numberOfStructures)
     {
-        int amount = (int)(moneyHelper.Money / placementCost);
+        int amount = (int)(MoneyHelper.Money / placementCost);
         return amount > numberOfStructures ? numberOfStructures : amount;
     }
 

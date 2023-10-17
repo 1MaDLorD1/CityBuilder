@@ -36,7 +36,15 @@ public class PlacementManager : MonoBehaviour, IPlacementManager
 
     public GameObject PlaceStructureOnTheMap(Vector3 gridPosition, GameObject buildingPrefab, RotationValue rotationValue)
     {
-        GameObject newStructure =  Instantiate(buildingPrefab, ground.position + gridPosition, Quaternion.identity);
+        GameObject newStructure;
+        if (ground == null)
+        {
+            newStructure = Instantiate(buildingPrefab, new Vector3(0, 0, 0) + gridPosition, Quaternion.identity);
+        }
+        else
+        {
+            newStructure = Instantiate(buildingPrefab, ground.position + gridPosition, Quaternion.identity);
+        }
         Vector3 rotation = Vector3.zero;
         switch (rotationValue)
         {
