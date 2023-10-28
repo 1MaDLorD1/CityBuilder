@@ -7,7 +7,6 @@ public class PlayerBuildingSingleStructureState : PlayerState
     BuildingManager buildingManager;
     string structureName;
 
-
     public PlayerBuildingSingleStructureState(GameManager gameManager,BuildingManager buildingManager) : base(gameManager)
     {
         this.buildingManager = buildingManager;
@@ -27,7 +26,6 @@ public class PlayerBuildingSingleStructureState : PlayerState
 
     public override void OnInputPointerDown(Vector3 position)
     {
-
         this.buildingManager.PrepareStructureForModification(position, structureName, StructureType.SingleStructure);
     }
 

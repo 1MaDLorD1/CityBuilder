@@ -1,52 +1,138 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Resources;
+using Unity.Plastic.Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class BuildingManager 
 {
-    GridStructure grid;
-    IPlacementManager placementManager;
-    StructureRepository structureRepository;
-    StructureModificationHelper helper; 
-    
+    public GridStructure grid;
+    public PlacementManager placementManager;
+    public StructureRepository structureRepository;
+    public IResourceManager resourceManager;
+    StructureModificationHelper helper;
+    RoadPlacementModificationHelper roadHelper;
+    SingleStructurePlacementHelper structureHelper;
 
-    public BuildingManager(GridStructure grid,IPlacementManager placementManager, StructureRepository structureRepository, IResourceManager resourceManager)
+    private Dictionary<Vector3Int, (GameObject, StructureBaseSO, RotationValue)> fullStructuresInfo = new Dictionary<Vector3Int, (GameObject, StructureBaseSO, RotationValue)>();
+
+    private List<GameObject> structuresObjects = new List<GameObject>();
+
+    private Dictionary<Vector3Int, GameObject> roadsToBeModified = new Dictionary<Vector3Int, GameObject>();
+
+    public StructureModificationHelper Helper { get => helper; set => helper = value; }
+
+    public BuildingManager(GridStructure grid,PlacementManager placementManager, StructureRepository structureRepository, IResourceManager resourceManager)
     {
         this.grid = grid;
         this.placementManager = placementManager;
         this.structureRepository = structureRepository;
+        this.resourceManager = resourceManager;
         StructureModificationFactory.PrepareFactory(structureRepository, grid, placementManager, resourceManager);
+        placementManager.StructureDeleted += OnStructureDeleted;
+    }
+
+    ~BuildingManager()
+    {
+        placementManager.StructureDeleted -= OnStructureDeleted;
+    }
+
+    private void OnStructureDeleted(Vector3Int position)
+    {
+        if (fullStructuresInfo.TryGetValue(position, out var road) && road.Item2.GetType() == typeof(RoadStructureSO))
+        {
+            Debug.Log("kek");
+        }
+        fullStructuresInfo.Remove(position);
+        if (roadsToBeModified.ContainsKey(position))
+        {
+            roadsToBeModified.Remove(position);
+        }
+    }
+
+    public void ConfirmModificationsOnStart()
+    {
+        StructureModificationFactory.PrepareFactory(structureRepository, grid, placementManager, resourceManager);
+        placementManager.StructureDeleted += OnStructureDeleted;
+
+        foreach (var structure in placementManager.AllStructuresInfo)
+        {
+            StructureType structureType;
+
+            if (structure.Value.Item2.GetType() == typeof(ZoneStructureSO))
+            {
+                structureType = StructureType.Zone;
+            }
+            else if (structure.Value.Item2.GetType() == typeof(RoadStructureSO))
+            {
+                structureType = StructureType.Road;
+            }
+            else if (structure.Value.Item2.GetType() == typeof(SingleFacilitySO))
+            {
+                structureType = StructureType.SingleStructure;
+            }
+            else
+            {
+                structureType = StructureType.None;
+            }
+
+            if (!fullStructuresInfo.ContainsKey(structure.Key))
+            {
+                fullStructuresInfo.Add(structure.Key, (structureRepository.GetBuildingPrefabByName(structure.Value.Item1, structureType), structure.Value.Item2, RotationValue.R0));
+            }
+        }
+
+        foreach (var structure in fullStructuresInfo)
+        {
+            structuresObjects.Add(structure.Value.Item1);
+
+            if(structure.Value.Item2.buildingName == "Дорога" && !roadsToBeModified.ContainsKey(structure.Key))
+            {
+                roadsToBeModified.Add(structure.Key, structure.Value.Item1);
+            }
+        }
+
+        placementManager.PlaceStructuresOnTheMap(structuresObjects);
+        //Type structureType = structureData.GetType();
+        foreach (var keyValuePair in fullStructuresInfo)
+        {
+            if (keyValuePair.Value.Item2.buildingName == "Дорога")
+            {
+                var roadStructure = RoadManager.GetCorrectRoadPrefab(keyValuePair.Key, keyValuePair.Value.Item2, roadsToBeModified, grid);
+                var newStructure = placementManager.PlaceStructureOnTheMap(keyValuePair.Key, roadStructure.RoadPrefab, roadStructure.RoadPrefabRotation);
+                grid.PlaceStructureOnTheGrid(newStructure, keyValuePair.Key, GameObject.Instantiate(keyValuePair.Value.Item2));
+            }
+            else
+            {
+                var newStructure = placementManager.PlaceStructureOnTheMap(keyValuePair.Key, keyValuePair.Value.Item1, RotationValue.R0);
+                grid.PlaceStructureOnTheGrid(newStructure, keyValuePair.Key, GameObject.Instantiate(keyValuePair.Value.Item2));
+            }
+
+            
+            StructureEconomyManager.CreateStructureLogic(keyValuePair.Value.Item2.GetType(), keyValuePair.Key, grid);
+        }
+        fullStructuresInfo = new Dictionary<Vector3Int, (GameObject, StructureBaseSO, RotationValue)>();
     }
 
     public void PrepareBuildingManager(Type classType)
     {
-        helper = StructureModificationFactory.GetHelper(classType);
-    }
-
-    public void PlaceRoadsOnStart(List<Vector3> roadsPositions)
-    {
-        for (int i = 0; i < roadsPositions.Count; i++)
-        {
-            ((RoadPlacementModificationHelper)helper).PrepareStructureForPlacementOnStart(roadsPositions[i], "Дорога", StructureType.Road);
-        }
-
-        ((RoadPlacementModificationHelper)helper).ConfirmModifications();
+        Helper = StructureModificationFactory.GetHelper(classType);
     }
 
     public void PrepareStructureForModification(Vector3 inputPosition, string structureName, StructureType structureType)
     {
-        helper.PrepareStructureForPlacement(inputPosition, structureName, structureType);
+        Helper.PrepareStructureForPlacement(inputPosition, structureName, structureType);
     }
 
     public void ConfirmModification()
     {
-        helper.ConfirmModifications();
+        Helper.ConfirmModifications();
     }
 
     public void CancleModification()
     {
-        helper.CancleModifications();
+        Helper.CancleModifications();
     }
 
     public IEnumerable<StructureBaseSO> GetAllStructures()
@@ -56,7 +142,7 @@ public class BuildingManager
 
     public void PrepareStructureForDemolitionAt(Vector3 inputPosition)
     {
-        helper.PrepareStructureForPlacement(inputPosition, "", StructureType.None);
+        Helper.PrepareStructureForPlacement(inputPosition, "", StructureType.None);
     }
 
 
@@ -75,18 +161,18 @@ public class BuildingManager
     {
         Vector3 gridPosition = grid.CalculateGridPosition(inputPosition);
         GameObject structureToReturn = null;
-        structureToReturn = helper.AccessStructureInDictionary(gridPosition);
+        structureToReturn = Helper.AccessStructureInDictionary(gridPosition);
         if (structureToReturn != null)
         {
             return structureToReturn;
         }
-        structureToReturn = helper.AccessStructureInDictionary(gridPosition);
+        structureToReturn = Helper.AccessStructureInDictionary(gridPosition);
         return structureToReturn;
     }
 
     public void StopContinuousPlacement()
     {
-        helper.StopContinuousPlacement();
+        Helper.StopContinuousPlacement();
     }
 
     public StructureBaseSO GetStructureDataFromPosition(Vector3 inputPosition)

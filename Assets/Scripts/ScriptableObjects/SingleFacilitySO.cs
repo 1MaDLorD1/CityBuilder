@@ -39,12 +39,12 @@ public class SingleFacilitySO : SingleStructureBaseSO
         {
             if (maxCustomers > customers.Count && nearbyStructure != this)
             {
-                if (facilityType == FacilityType.Water && nearbyStructure.requireWater)
+                if (facilityType == FacilityType.Water && nearbyStructure.requireWater && nearbyStructure.WaterProvider == null)
                 {
                     nearbyStructure.AddWaterFacility(this);
                     customers.Add(nearbyStructure);
                 }
-                if (facilityType == FacilityType.Power && nearbyStructure.requirePower)
+                if (facilityType == FacilityType.Power && nearbyStructure.requirePower && nearbyStructure.PowerProvider == null)
                 {
                     nearbyStructure.AddPowerFacility(this);
                     customers.Add(nearbyStructure);

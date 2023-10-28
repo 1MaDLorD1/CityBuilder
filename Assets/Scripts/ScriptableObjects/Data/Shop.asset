@@ -20,7 +20,7 @@ MonoBehaviour:
   requireRoadAccess: 1
   requireWater: 1
   requirePower: 1
-  structureRange: 0
+  structureRange: 1
   upgradable: 1
   prefabVariants:
   - {fileID: 7005307079094063810, guid: c77e949770bd8a54f8256dab2e9d5956, type: 3}

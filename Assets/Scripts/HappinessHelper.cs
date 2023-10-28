@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class HappinessHelper
 {
-    private ResourceManager _resourceManager;
+    public ResourceManager _resourceManager;
 
     private int _happiness = 0;
 
@@ -31,22 +31,18 @@ public class HappinessHelper
                 var road = structure.HasRoadAccess();
                 if (power && water && road)
                 {
-                    Debug.Log("veselo");
                     Happiness += (1 - _resourceManager.TaxesManager.Taxes / 50);
                 }
                 else if (water && road || water && power || power && road)
                 {
-                    Debug.Log("sredne");
                     Happiness -= _resourceManager.TaxesManager.Taxes / 50;
                 }
                 else if (water || power || road)
                 {
-                    Debug.Log("grustno");
                     Happiness -= (1 + _resourceManager.TaxesManager.Taxes / 50);
                 }
                 else
                 {
-                    Debug.Log("depression");
                     Happiness -= (2 + _resourceManager.TaxesManager.Taxes / 50);
                 }
             }

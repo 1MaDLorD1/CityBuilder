@@ -50,7 +50,6 @@ public class PlayerBuildingZoneState : PlayerState
 
     public override void OnInputPointerDown(Vector3 position)
     {
-
         this.buildingManager.PrepareStructureForModification(position, structureName, StructureType.Zone);
     }
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlacementManager : MonoBehaviour, IPlacementManager
 {
@@ -9,6 +10,13 @@ public class PlacementManager : MonoBehaviour, IPlacementManager
     public Material transparentMaterial;
     private Dictionary<GameObject, Material[]> originalMaterials = new Dictionary<GameObject, Material[]>();
     private WorldManager worldManager;
+
+    private Dictionary<Vector3Int, (string, StructureBaseSO)> allStructuresInfo = new Dictionary<Vector3Int, (string, StructureBaseSO)>();
+
+    public Dictionary<Vector3Int, (string, StructureBaseSO)> AllStructuresInfo { get => allStructuresInfo; set => allStructuresInfo = value; }
+
+    public UnityAction<Vector3Int> StructureDeleted;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -93,9 +101,11 @@ public class PlacementManager : MonoBehaviour, IPlacementManager
     {
         foreach (var structure in structureCollection)
         {
-            worldManager.DestroyNatureAtLocation(structure.transform.position);
-            ResetBuildingLook(structure);
-
+            if (structure != null)
+            {
+                worldManager.DestroyNatureAtLocation(structure.transform.position);
+                ResetBuildingLook(structure);
+            }
         }
         originalMaterials.Clear();
     }
@@ -116,6 +126,8 @@ public class PlacementManager : MonoBehaviour, IPlacementManager
     {
         foreach (var structure in structureCollection)
         {
+            AllStructuresInfo.Remove(Vector3Int.FloorToInt(structure.transform.position));
+            StructureDeleted?.Invoke(Vector3Int.FloorToInt(structure.transform.position));
             DestroySingleStructure(structure);
         }
         originalMaterials.Clear();

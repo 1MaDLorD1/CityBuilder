@@ -32,16 +32,6 @@ public class RoadPlacementModificationHelper : StructureModificationHelper
         }
     }
 
-    public void PrepareStructureForPlacementOnStart(Vector3 inputPosition, string structureName, StructureType structureType)
-    {
-        base.PrepareStructureForPlacement(inputPosition, structureName, structureType);
-        Vector3 gridPosition = grid.CalculateGridPosition(inputPosition);
-        var gridPositionInt = Vector3Int.FloorToInt(gridPosition);
-        var roadStructure = RoadManager.GetCorrectRoadPrefab(gridPosition, structureData, structuresToBeModified, grid);
-        PlaceNewRoadAt(roadStructure, gridPosition, gridPositionInt);
-        AdjustNeighboursIfAreRoadStructures(gridPosition);
-    }
-
     private void AdjustNeighboursIfAreRoadStructures(Vector3 gridPositon)
     {
         AdjustNeighboursIfRoad(gridPositon, Direction.Up);

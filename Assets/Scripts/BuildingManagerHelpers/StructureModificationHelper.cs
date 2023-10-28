@@ -39,6 +39,11 @@ public abstract class StructureModificationHelper
         {
             grid.PlaceStructureOnTheGrid(keyValuePair.Value, keyValuePair.Key, GameObject.Instantiate(structureData) );
             StructureEconomyManager.CreateStructureLogic(structureType, keyValuePair.Key, grid);
+
+            if (!((PlacementManager)placementManager).AllStructuresInfo.ContainsKey(keyValuePair.Key))
+            {
+                ((PlacementManager)placementManager).AllStructuresInfo.Add(keyValuePair.Key, (structureData.buildingName, structureData));
+            }
         }
         ResetHelpersData();
     }

@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: "\u0412\u0435\u0442\u0440\u044F\u043A"
   prefab: {fileID: 1227204765822627376, guid: 4b6d6c95f65b15b44a0b9e4466aba8b6, type: 3}
-  placementCost: 5000
-  upkeepCost: 0
+  placementCost: 10000
+  upkeepCost: 2
   income: 0
   requireRoadAccess: 1
   requireWater: 0
   requirePower: 0
   structureRange: 1
   singleStructureRange: 5
-  maxCustomers: 10
+  maxCustomers: 50
   upkeepPerCustomer: 0
   facilityType: 0

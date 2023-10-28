@@ -12,6 +12,7 @@ public class ZonePlacementHelper : StructureModificationHelper
     Vector3 mapBottomLeftCorner;
     Queue<GameObject> gameObjectsToReuse = new Queue<GameObject>();
     private int structuresOldQuantity = 0;
+    private int moneySpend = 0;
 
     public ZonePlacementHelper(StructureRepository structureRepository, GridStructure grid, IPlacementManager placementManager, Vector3 mapBottomLeftCorner, IResourceManager resourceManager) : base(structureRepository, grid, placementManager, resourceManager)
     {
@@ -27,11 +28,11 @@ public class ZonePlacementHelper : StructureModificationHelper
             startPosition = gridPositon;
             startPositionAcquired = true;
         }
-        if (startPositionAcquired && previousEndPositon == null || ZoneCalculator.CheckIfPositionHasChanged(gridPositon, previousEndPositon.Value, grid))
+
+        if (startPositionAcquired && (previousEndPositon == null || ZoneCalculator.CheckIfPositionHasChanged(gridPositon, previousEndPositon.Value, grid)) && grid.IsCellTaken(gridPositon) == false)
         {
             PlaceNewZoneUpTo(gridPositon);
         }
-
     }
 
     private void PlaceNewZoneUpTo(Vector3 endPosition)
@@ -50,29 +51,28 @@ public class ZonePlacementHelper : StructureModificationHelper
         foreach (var positionToPlaceStructure in newPositionsSet)
         {
             if (grid.IsCellTaken(positionToPlaceStructure))
+            {
                 continue;
+            }
             GameObject structureToAdd = null;
             if (gameObjectsToReuse.Count > 0)
             {
                 var gameObjectToReuse = gameObjectsToReuse.Dequeue();
                 gameObjectToReuse.SetActive(true);
                 structureToAdd = placementManager.MoveStructureOnTheMap(positionToPlaceStructure, gameObjectToReuse, structureData.prefab);
-
             }
             else
             {
                 structureToAdd = placementManager.CreateGhostStructure(positionToPlaceStructure, structureData.prefab);
-
             }
             structuresToBeModified.Add(positionToPlaceStructure, structureToAdd);
         }
-
-
     }
 
     private HashSet<Vector3Int> CalculateZoneCost(HashSet<Vector3Int> newPositionsSet)
     {
-        resourceManager.AddMoney(structuresOldQuantity * structureData.placementCost);
+        resourceManager.AddMoney(moneySpend);
+        moneySpend = 0;
 
         int numberToPlace = resourceManager.HowManyStructuresCanIPlace(structureData.placementCost, newPositionsSet.Count);
 
@@ -82,13 +82,22 @@ public class ZonePlacementHelper : StructureModificationHelper
             newPositionsSet = new HashSet<Vector3Int>(newPositionsSet.Take(numberToPlace).ToList());
         }
         structuresOldQuantity = newPositionsSet.Count;
-        resourceManager.SpendMoney(structuresOldQuantity * structureData.placementCost);
-        Debug.Log(structuresOldQuantity);
+
+        foreach (var positionToPlaceStructure in newPositionsSet)
+        {
+            if (!grid.IsCellTaken(positionToPlaceStructure))
+            {
+                moneySpend += structureData.placementCost;
+                resourceManager.SpendMoney(structureData.placementCost);
+            }
+        }
+
         return newPositionsSet;
     }
 
     public override void CancleModifications()
     {
+        moneySpend = 0;
         resourceManager.AddMoney(structuresOldQuantity * structureData.placementCost);
         base.CancleModifications();
         ResetZonePlacementHelper();

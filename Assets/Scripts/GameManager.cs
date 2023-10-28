@@ -3,11 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
     public GameObject placementManagerGameObject;
-    private IPlacementManager placementManager;
+    private PlacementManager placementManager;
     public StructureRepository structureRepository;
     public InputManager inputManger;
     public UiController uiController;
@@ -27,11 +28,15 @@ public class GameManager : MonoBehaviour
     public PlayerState State { get => state;}
     public BuildingManager BuildingManager { get => buildingManager; set => buildingManager = value;  }
     public IResourceManager ResourceManager { get => resourceManager; }
+    public bool StartAgain { get => startAgain; set => startAgain = value; }
 
     public GameObject resourceManagerGameObject;
     private IResourceManager resourceManager;
 
+    private bool startAgain = false;
+
     public WorldManager worldManager;
+
     private void Awake()
     {
 
@@ -42,20 +47,20 @@ public class GameManager : MonoBehaviour
 #if (UNITY_IOS || UNITY_ANDROID)
 
 #endif
-        placementManager = placementManagerGameObject.GetComponent<IPlacementManager>();
+        placementManager = placementManagerGameObject.GetComponent<PlacementManager>();
         placementManager.PreparePlacementManager(worldManager);
         resourceManager = resourceManagerGameObject.GetComponent<IResourceManager>();
         worldManager.PrepareWorld(cellSize, width, length);
-        PrepareStates();
-    }
-
-    private void PrepareStates()
-    {
-        if (buildingManager == null)
+        if (!StartAgain)
         {
             worldManager.PrepareTrees();
             buildingManager = new BuildingManager(worldManager.Grid, placementManager, structureRepository, ResourceManager);
+            PrepareStates();
         }
+    }
+
+    private void PrepareStates()
+    { 
         resourceManager.PrepareResourceManager(BuildingManager);
         selectionState = new PlayerSelectionState(this, BuildingManager);
         demolishState = new PlayerDemolitionState(this, BuildingManager);
@@ -67,11 +72,17 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        if (buildingRoadState.RoadsPositions.Count != 0)
+        if(StartAgain)
         {
-            buildingManager.PlaceRoadsOnStart(buildingRoadState.RoadsPositions);
+            buildingManager.grid = worldManager.Grid;
+            buildingManager.placementManager = placementManager;
+            buildingManager.resourceManager = resourceManager;
+            buildingManager.structureRepository = structureRepository;
+            PrepareStates();
+            buildingManager.ConfirmModificationsOnStart();
             worldManager.PrepareTreesAgain();
         }
+        StartAgain = true;
         PreapreGameComponents();
         AssignInputListeners();
         AssignUiControllerListeners();

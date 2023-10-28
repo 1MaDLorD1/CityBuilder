@@ -5,17 +5,22 @@ using UnityEngine;
 
 public class MoneyHelper
 {
-    private int money;
+    private int money = 5000;
 
-    private ResourceManager _resourceManager;
+    public ResourceManager resourceManager;
 
     public MoneyHelper(int startMoneyAmount, ResourceManager resourceManager)
     {
-        _resourceManager = resourceManager;
+        this.resourceManager = resourceManager;
         this.money = startMoneyAmount;
     }
 
-    public int Money { get => money; 
+    public int Money 
+    {
+        get
+        {
+            return money;
+        }
         set 
         { 
             if(value < 0)
@@ -59,8 +64,18 @@ public class MoneyHelper
     {
         foreach (var structure in buildings)
         {
-            int moneyWithoutTaxes = (int)(structure.GetIncome() + structure.GetIncome() * ( (float)_resourceManager.HappinessHelper.Happiness / 50 ));
-            Money += (int)(moneyWithoutTaxes + _resourceManager.PopulationHelper.Population * ((float)_resourceManager.TaxesManager.Taxes / 100));
+            int moneyWithoutTaxes;
+
+            if ((float)resourceManager.HappinessHelper.Happiness > -50)
+            {
+                moneyWithoutTaxes = (int)(structure.GetIncome() + structure.GetIncome() * resourceManager.PopulationHelper.Population / 100 + structure.GetIncome() * ((float)resourceManager.HappinessHelper.Happiness / 50));
+            }
+            else
+            {
+                moneyWithoutTaxes = (int)(structure.GetIncome() + structure.GetIncome() * resourceManager.PopulationHelper.Population / 100 + structure.GetIncome() * ((float)resourceManager.HappinessHelper.Happiness / 25));
+            }
+
+            Money += (int)(moneyWithoutTaxes + resourceManager.PopulationHelper.Population * ((float)resourceManager.TaxesManager.Taxes / 100));
         }
     }
 }

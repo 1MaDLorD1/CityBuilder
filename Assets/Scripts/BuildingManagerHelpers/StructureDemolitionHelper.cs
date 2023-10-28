@@ -27,6 +27,7 @@ public class StructureDemolitionHelper : StructureModificationHelper
             PrepareStructureForDemolition(gridPosition);
             grid.RemoveStructureFromTheGrid(gridPosition);
         }
+
         foreach (var keyVeluPair in roadToDemolish)
         {
             Dictionary<Vector3Int, GameObject> neighboursDictionary = RoadManager.GetRoadNeighboursForPosition(grid, keyVeluPair.Key);
@@ -35,9 +36,8 @@ public class StructureDemolitionHelper : StructureModificationHelper
                 var structureData = grid.GetStructureDataFromTheGrid(neighboursDictionary.Keys.First());
                 RoadManager.ModifyRoadCellsOnTheGrid(neighboursDictionary, structureData, null, grid, placementManager);
             }
-
-
         }
+
         this.placementManager.DestroyStructures(structuresToBeModified.Values);
         structuresToBeModified.Clear();
     }

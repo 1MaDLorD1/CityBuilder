@@ -10,9 +10,15 @@ public class TaxesManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _taxesValue;
     [SerializeField] private Image _fillArea;
 
-    private int taxes = 0;
+    private int taxes;
 
-    public int Taxes { get => taxes; }
+    public int Taxes { get => taxes; set => taxes = value; }
+
+    private void Start()
+    {
+        _slider.value = Taxes;
+        _taxesValue.text = taxes + "%";
+    }
 
     private void Update()
     {

@@ -194,13 +194,22 @@ public class GridStructure
         var gridPosition = CalculateGridPosition(position);
         var gridIndex = CalculateGridIndex(gridPosition);
         grid[gridIndex.y, gridIndex.x].AddNatureObject(natureElement);
-
+        //var elementsTODestroy = grid[gridIndex.y, gridIndex.x].GetNatureOnThisCell();
+        //foreach (var element in elementsTODestroy)
+        //{
+        //    Debug.Log(element);
+        //}
     }
 
     public List<GameObject> GetNaturesObjectsToRemove(Vector3 position)
     {
         var gridPosition = CalculateGridPosition(position);
         var gridIndex = CalculateGridIndex(gridPosition);
+        var elementsTODestroy = grid[gridIndex.y, gridIndex.x].GetNatureOnThisCell();
+        //foreach (var element in elementsTODestroy)
+        //{
+        //    Debug.Log(element);
+        //}
         return grid[gridIndex.y, gridIndex.x].GetNatureOnThisCell();
     }
 

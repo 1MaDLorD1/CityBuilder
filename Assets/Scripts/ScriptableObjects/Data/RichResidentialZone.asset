@@ -17,11 +17,11 @@ MonoBehaviour:
   prefab: {fileID: 3270619391403704889, guid: 6e71b3ebef897534692cebd711e56073, type: 3}
   placementCost: 3000
   upkeepCost: 0
-  income: 100
+  income: 0
   requireRoadAccess: 1
   requireWater: 1
   requirePower: 1
-  structureRange: 10
+  structureRange: 16
   upgradable: 1
   prefabVariants:
   - {fileID: 7005307079094063810, guid: c77e949770bd8a54f8256dab2e9d5956, type: 3}

@@ -110,11 +110,13 @@ public static class RoadManager
     public static Dictionary<Vector3Int, GameObject> GetRoadNeighboursForPosition(GridStructure grid, Vector3Int position)
     {
         Dictionary<Vector3Int, GameObject> dictionaryToReturn = new Dictionary<Vector3Int, GameObject>();
-        List<Vector3Int?> neighbourPossibleLocations = new List<Vector3Int?>();
-        neighbourPossibleLocations.Add(grid.GetPositionOfTheNeighbourIfExists(position, Direction.Up));
-        neighbourPossibleLocations.Add(grid.GetPositionOfTheNeighbourIfExists(position, Direction.Down));
-        neighbourPossibleLocations.Add(grid.GetPositionOfTheNeighbourIfExists(position, Direction.Left));
-        neighbourPossibleLocations.Add(grid.GetPositionOfTheNeighbourIfExists(position, Direction.Right));
+        List<Vector3Int?> neighbourPossibleLocations = new List<Vector3Int?>
+        {
+            grid.GetPositionOfTheNeighbourIfExists(position, Direction.Up),
+            grid.GetPositionOfTheNeighbourIfExists(position, Direction.Down),
+            grid.GetPositionOfTheNeighbourIfExists(position, Direction.Left),
+            grid.GetPositionOfTheNeighbourIfExists(position, Direction.Right)
+        };
         foreach (var possiblePosition in neighbourPossibleLocations)
         {
             if (possiblePosition.HasValue)
@@ -133,11 +135,13 @@ public static class RoadManager
     {
         foreach (var keyValuePair in neighboursDictionar)
         {
+            //((PlacementManager)placementManager).AllStructuresInfo.Remove(keyValuePair.Key);
             grid.RemoveStructureFromTheGrid(keyValuePair.Key);
             placementManager.DestroySingleStructure(keyValuePair.Value);
             var roadStructure = GetCorrectRoadPrefab(keyValuePair.Key, structureData, structuresToBeModified, grid);
             var structure = placementManager.PlaceStructureOnTheMap(keyValuePair.Key, roadStructure.RoadPrefab, roadStructure.RoadPrefabRotation);
             grid.PlaceStructureOnTheGrid(structure, keyValuePair.Key, GameObject.Instantiate(structureData));
+            //((PlacementManager)placementManager).AllStructuresInfo.Add(keyValuePair.Key, ("Дорога", structureData));
         }
         neighboursDictionar.Clear();
     }

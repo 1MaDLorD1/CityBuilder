@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace YG
@@ -21,13 +22,22 @@ namespace YG
 
         // Ваши сохранения
 
-        public int money = 5000;
-        public int happiness = 0;
+        public int money;
+        public int taxesValue = 0;
+        public MoneyHelper moneyHelper;
+        public PopulationHelper populationHelper;
+        public HappinessHelper happinessHelper;
         public float musicVolume;
         public float soundsVolume;
         public BuildingManager buildingManager = null;
         public List<Vector3> roadsPositions = new List<Vector3>();
-        public List<Vector3> treesPositions = new List<Vector3>();
+        public Dictionary<Vector3, string> structuresPositions = new Dictionary<Vector3, string>();
+        public List<Vector2> treesPositions = new List<Vector2>();
+        public List<Vector2> treesRemovePositions = new List<Vector2>();
+        public Dictionary<Vector3Int, (string, StructureBaseSO)> allStructuresPositions = new Dictionary<Vector3Int, (string, StructureBaseSO)>();
+        public Dictionary<Vector3Int, (string, RotationValue, StructureBaseSO)> allRoadsInfo = new Dictionary<Vector3Int, (string, RotationValue, StructureBaseSO)>();
+        public bool startAgain = false;
+        public bool questsComplete = false;
 
         // Поля (сохранения) можно удалять и создавать новые. При обновлении игры сохранения ломаться не должны
 

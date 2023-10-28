@@ -9,7 +9,8 @@ using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
-    private List<Vector3> treesOnTheMap = new List<Vector3>();
+    private List<Vector2> treesOnTheMap = new List<Vector2>();
+    private List<Vector2> treesToRemove = new List<Vector2>();
     public GameObject tree;
     public Transform natureParent;
     int width, length;
@@ -20,7 +21,8 @@ public class WorldManager : MonoBehaviour
     private const int cellSize = 3;
 
     public GridStructure Grid { get => grid;}
-    public List<Vector3> TreesOnTheMap { get => treesOnTheMap; set => treesOnTheMap = value; }
+    public List<Vector2> TreesOnTheMap { get => treesOnTheMap; set => treesOnTheMap = value; }
+    public List<Vector2> TreesToRemove { get => treesToRemove; set => treesToRemove = value; }
 
     public void PrepareWorld(int cellSize, int width, int length)
     {
@@ -42,7 +44,10 @@ public class WorldManager : MonoBehaviour
     {
         foreach (Vector2 samplePosition in TreesOnTheMap.ToList())
         {
-            PlaceObjectOnTHeMap(samplePosition, tree);
+            if (!TreesToRemove.Contains(samplePosition))
+            {
+                PlaceObjectOnTHeMapAgain(samplePosition, tree);
+            }
         }
     }
 
@@ -51,14 +56,22 @@ public class WorldManager : MonoBehaviour
         var positionInt = Vector2Int.CeilToInt(samplePosition);
         var positionGrid = grid.CalculateGridPosition(new Vector3(positionInt.x, 0, positionInt.y));
         var natureElement = Instantiate(objectTOCreate, positionGrid, Quaternion.identity,natureParent);
-        TreesOnTheMap.Add(positionGrid);
+        TreesOnTheMap.Add(new Vector2(positionGrid.x, positionGrid.z));
+        grid.AddNatureToCell(positionGrid, natureElement);
+    }
+
+    private void PlaceObjectOnTHeMapAgain(Vector2 samplePosition, GameObject objectTOCreate)
+    {
+        var positionInt = Vector2Int.CeilToInt(samplePosition);
+        var positionGrid = grid.CalculateGridPosition(new Vector3(positionInt.x, 0, positionInt.y));
+        var natureElement = Instantiate(objectTOCreate, positionGrid, Quaternion.identity, natureParent);
         grid.AddNatureToCell(positionGrid, natureElement);
     }
 
     public void DestroyNatureAtLocation(Vector3 position)
     {
         var elementsTODestroy = grid.GetNaturesObjectsToRemove(position);
-        //TreesOnTheMap.FindIndex((Predicate<Vector3>)position);
+        TreesToRemove.Add(new Vector2(position.x, position.z));
         foreach (var element in elementsTODestroy)
         {
             Destroy(element);
