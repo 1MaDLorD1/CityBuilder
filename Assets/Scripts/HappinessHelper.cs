@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Resources;
@@ -5,6 +6,7 @@ using UnityEngine;
 
 public class HappinessHelper
 {
+    [field: NonSerialized]
     public ResourceManager _resourceManager;
 
     private int _happiness = 0;

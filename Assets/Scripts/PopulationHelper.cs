@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class PopulationHelper
     public int Population
     {
         get { return population; }
-        private set { population = value; }
+        set { population = value; }
     }
 
     public void AddToPopulation(int value)

@@ -29,7 +29,7 @@ public class SingleFacilitySO : SingleStructureBaseSO
 
     public override int GetIncome()
     {
-        return customers.Count * income;
+        return customers.Count * Income;
     }
 
 

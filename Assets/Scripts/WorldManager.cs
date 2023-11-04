@@ -71,7 +71,8 @@ public class WorldManager : MonoBehaviour
     public void DestroyNatureAtLocation(Vector3 position)
     {
         var elementsTODestroy = grid.GetNaturesObjectsToRemove(position);
-        TreesToRemove.Add(new Vector2(position.x, position.z));
+        if(!TreesToRemove.Contains(new Vector2(position.x, position.z)))
+            TreesToRemove.Add(new Vector2(position.x, position.z));
         foreach (var element in elementsTODestroy)
         {
             Destroy(element);

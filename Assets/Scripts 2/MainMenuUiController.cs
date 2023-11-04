@@ -10,6 +10,7 @@ public class MainMenuUiController : MonoBehaviour
     [SerializeField] private Button _settingsButton;
     [SerializeField] private GameObject _settingsMenu;
     [SerializeField] private VolumeManager _volumeManager;
+    [SerializeField] private MainMenuSceneLoader _mainMenuSceneLoader;
 
     void Start()
     {
@@ -20,7 +21,7 @@ public class MainMenuUiController : MonoBehaviour
     private void OnStartGameHandler()
     {
         MainMenuAudioManager.Instance.PlayButtonClickedSound();
-        var tuple = (_volumeManager.MusicAudioSource.volume, _volumeManager.SoundsAudioSource.volume);
+        var tuple = (_volumeManager.MusicAudioSource.volume, _volumeManager.SoundsAudioSource.volume, _mainMenuSceneLoader.LevelConfiguration);
         BuildingMechanicPrototype.Load(tuple);
     }
 

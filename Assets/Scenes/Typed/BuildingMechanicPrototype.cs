@@ -18,12 +18,12 @@ namespace IJunior.TypedScenes
         
         private const string _sceneName = "BuildingMechanicPrototype";
         
-        public static void Load(System.ValueTuple<float, float> argument, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
+        public static void Load(System.ValueTuple<float, float, LevelConfiguration> argument, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
         {
             LoadScene(_sceneName, loadSceneMode, argument);
         }
         
-        public static UnityEngine.AsyncOperation LoadAsync(System.ValueTuple<float, float> argument, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
+        public static UnityEngine.AsyncOperation LoadAsync(System.ValueTuple<float, float, LevelConfiguration> argument, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
         {
             return LoadScene(_sceneName, loadSceneMode, argument);
         }

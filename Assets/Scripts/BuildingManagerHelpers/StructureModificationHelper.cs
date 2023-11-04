@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public abstract class StructureModificationHelper
 {
@@ -11,6 +12,8 @@ public abstract class StructureModificationHelper
     protected readonly IPlacementManager placementManager;
     protected StructureBaseSO structureData;
     protected IResourceManager resourceManager;
+
+    public UnityAction StructureAdded;
 
     public StructureModificationHelper(StructureRepository structureRepository, GridStructure grid, IPlacementManager placementManager, IResourceManager resourceManager)
     {
@@ -43,6 +46,7 @@ public abstract class StructureModificationHelper
             if (!((PlacementManager)placementManager).AllStructuresInfo.ContainsKey(keyValuePair.Key))
             {
                 ((PlacementManager)placementManager).AllStructuresInfo.Add(keyValuePair.Key, (structureData.buildingName, structureData));
+                StructureAdded?.Invoke();
             }
         }
         ResetHelpersData();

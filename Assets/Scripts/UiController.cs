@@ -1,4 +1,5 @@
 ﻿using NSubstitute;
+using NSubstitute.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -98,7 +99,8 @@ public class UiController : MonoBehaviour
         continueBtn.onClick.AddListener(OnContinueHandler);
         menuBtn.onClick.AddListener(OnMenuHandler);
         continueMenuBtn.onClick.AddListener(OnContinueMenuHandler);
-        if(!QuestsComplete)
+
+        if (!QuestsComplete)
         {
             cancleActionBtn.onClick.RemoveAllListeners();
             confirmActionBtn.onClick.RemoveAllListeners();
@@ -184,6 +186,7 @@ public class UiController : MonoBehaviour
     private void OnElevenQuestHandler()
     {
         AudioManager.Instance.PlayButtonClickedSound();
+        QuestsComplete = true;
         _nubiksQuests[10].SetActive(false);
     }
 
@@ -261,6 +264,8 @@ public class UiController : MonoBehaviour
     {
         AudioManager.Instance.PlayButtonClickedSound();
         buildingMenuPanel.SetActive(true);
+
+        Debug.Log(QuestsComplete + " " + buildAreaAlreadyOpened);
 
         if (!QuestsComplete && !buildAreaAlreadyOpened)
         {
@@ -387,7 +392,8 @@ public class UiController : MonoBehaviour
         }
         else if(!QuestsComplete && buildAreaAlreadyOpened && !sixQuestOpen)
         {
-            isShopBuy = true;
+            if(nameOfStructure == "Магазин")
+                isShopBuy = true;
             if(isWaterBuy && isRoadBuy)
             {
                 openSevenQuest = true;
@@ -427,7 +433,8 @@ public class UiController : MonoBehaviour
     {
         if (!QuestsComplete && !sixQuestOpen)
         {
-            isWaterBuy = true;
+            if (nameOfStructure == "Источник воды")
+                isWaterBuy = true;
             if (isShopBuy && isRoadBuy)
             {
                 openSevenQuest = true;

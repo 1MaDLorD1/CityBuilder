@@ -14,6 +14,7 @@ public class MainMenuButton : MonoBehaviour
     [SerializeField] private AudioSource _musicAudioSource;
     [SerializeField] private AudioSource _soundsAudioSource;
     [SerializeField] private GameManager _gameManager;
+    [SerializeField] private SceneLoadManager _sceneLoadManager;
 
     public UnityAction MainMenuButtonPressed;
     public UnityAction AgainButtonPressed;
@@ -62,6 +63,21 @@ public class MainMenuButton : MonoBehaviour
         AudioManager.Instance.PlayButtonClickedSound();
         _gameManager.StartAgain = false;
         AgainButtonPressed?.Invoke();
-        BuildingMechanicPrototype.Load((_musicAudioSource.volume, _soundsAudioSource.volume));
+        BuildingMechanicPrototype.Load((_musicAudioSource.volume, _soundsAudioSource.volume, new LevelConfiguration()
+        {
+            BuildingManager = null,
+            MoneyHelper = null,
+            HappinessHelper = null,
+            PopulationHelper = null,
+            TaxesValue = 0,
+            TreesPositions = new List<Vector2>(),
+            TreesRemovePositions = new List<Vector2>(),
+            StartAgain = false,
+            QuestsComplete = true,
+            AllStructuresPositions = new Dictionary < Vector3Int, (string, StructureBaseSO)>(),
+            MainMenuSceneLoader = _sceneLoadManager.MainMenuSceneLoader,
+            AgainButtonPressed = true,
+            StartFirstTime = false
+        }));
     }
 }

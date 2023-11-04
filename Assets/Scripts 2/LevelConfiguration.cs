@@ -2,15 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Config", menuName = "Config")]
-public class LevelConfiguration : ScriptableObject
+public class LevelConfiguration
 {
-    [SerializeField] private int _money;
-    [SerializeField] private int _happiness;
-    [SerializeField] private int _musicVolume;
-    [SerializeField] private int _soundsVolume;
-    [SerializeField] GameManager _gameManager;
-
-    private BuildingManager _buildingManager;
-
+    public BuildingManager BuildingManager { get; set; }
+    public MoneyHelper MoneyHelper { get; set; }
+    public HappinessHelper HappinessHelper { get; set; }
+    public PopulationHelper PopulationHelper { get; set; }
+    public int TaxesValue { get; set; }
+    public List<Vector2> TreesPositions { get; set; }
+    public List<Vector2> TreesRemovePositions { get; set; }
+    public bool StartAgain { get; set; }
+    public bool QuestsComplete { get; set; }
+    public Dictionary<Vector3Int, (string, StructureBaseSO)> AllStructuresPositions { get; set; }
+    public MainMenuSceneLoader MainMenuSceneLoader { get; set; }
+    public bool AgainButtonPressed { get; set; }
+    public bool StartFirstTime {  get; set; }
 }

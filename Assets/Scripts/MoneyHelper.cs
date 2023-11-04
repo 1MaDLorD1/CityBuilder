@@ -7,6 +7,7 @@ public class MoneyHelper
 {
     private int money = 5000;
 
+    [field: NonSerialized]
     public ResourceManager resourceManager;
 
     public MoneyHelper(int startMoneyAmount, ResourceManager resourceManager)

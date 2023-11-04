@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Resources;
-using Unity.Plastic.Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class BuildingManager 
@@ -14,6 +13,8 @@ public class BuildingManager
     StructureModificationHelper helper;
     RoadPlacementModificationHelper roadHelper;
     SingleStructurePlacementHelper structureHelper;
+
+    public Dictionary<Vector3, (string, string)> structureInfoForSave = new Dictionary<Vector3, (string, string)>();
 
     private Dictionary<Vector3Int, (GameObject, StructureBaseSO, RotationValue)> fullStructuresInfo = new Dictionary<Vector3Int, (GameObject, StructureBaseSO, RotationValue)>();
 
@@ -36,6 +37,36 @@ public class BuildingManager
     ~BuildingManager()
     {
         placementManager.StructureDeleted -= OnStructureDeleted;
+        ((StructureModificationHelper)helper).StructureAdded -= OnStructureAdded;
+    }
+
+    private void OnStructureAdded()
+    {
+        foreach (var structure in placementManager.AllStructuresInfo) 
+        {
+            if (!structureInfoForSave.ContainsKey(structure.Key))
+            {
+                string structureInfo;
+                if (structure.Value.Item2.GetType() == typeof(RoadStructureSO))
+                {
+                    structureInfo = "Road";
+                }
+                else if (structure.Value.Item2.GetType() == typeof(ZoneStructureSO))
+                {
+                    structureInfo = "Zone";
+                }
+                else if (structure.Value.Item2.GetType() == typeof(SingleFacilitySO))
+                {
+                    structureInfo = "Single";
+                }
+                else
+                {
+                    structureInfo = "Null";
+                }
+
+                structureInfoForSave.Add(structure.Key, (structure.Value.Item1, structureInfo));
+            }
+        }
     }
 
     private void OnStructureDeleted(Vector3Int position)
@@ -79,7 +110,9 @@ public class BuildingManager
 
             if (!fullStructuresInfo.ContainsKey(structure.Key))
             {
-                fullStructuresInfo.Add(structure.Key, (structureRepository.GetBuildingPrefabByName(structure.Value.Item1, structureType), structure.Value.Item2, RotationValue.R0));
+                GameObject prefab = structureRepository.GetBuildingPrefabByName(structure.Value.Item1, structureType);
+                structure.Value.Item2.prefab = prefab;
+                fullStructuresInfo.Add(structure.Key, (prefab, structure.Value.Item2, RotationValue.R0));
             }
         }
 
@@ -112,12 +145,14 @@ public class BuildingManager
             
             StructureEconomyManager.CreateStructureLogic(keyValuePair.Value.Item2.GetType(), keyValuePair.Key, grid);
         }
+
         fullStructuresInfo = new Dictionary<Vector3Int, (GameObject, StructureBaseSO, RotationValue)>();
     }
 
     public void PrepareBuildingManager(Type classType)
     {
         Helper = StructureModificationFactory.GetHelper(classType);
+        ((StructureModificationHelper)helper).StructureAdded += OnStructureAdded;
     }
 
     public void PrepareStructureForModification(Vector3 inputPosition, string structureName, StructureType structureType)

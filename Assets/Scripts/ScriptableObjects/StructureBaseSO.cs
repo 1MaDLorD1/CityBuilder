@@ -22,10 +22,11 @@ public abstract class StructureBaseSO : ScriptableObject
     public SingleFacilitySO PowerProvider { get => powerProvider;}
     public SingleFacilitySO WaterProvider { get => waterProvider;}
     public RoadStructureSO RoadProvider { get => roadProvider;}
+    public int Income { get => income; set => income = value; }
 
     public virtual int GetIncome()
     {
-        return income;
+        return Income;
     }
 
     public bool HasPower()
@@ -50,7 +51,12 @@ public abstract class StructureBaseSO : ScriptableObject
 
     public void PreareStructure(IEnumerable<StructureBaseSO> structuresInRange)
     {
-        AddRoadProvider(structuresInRange);
+        if(requireRoadAccess)
+            AddRoadProvider(structuresInRange);
+        if (requireWater)
+            AddWaterProvider(structuresInRange);
+        if (requirePower)
+            AddPowerProvider(structuresInRange);
     }
 
     public void AddPowerFacility(SingleFacilitySO facility)
@@ -95,6 +101,34 @@ public abstract class StructureBaseSO : ScriptableObject
             if (nearbyStructure.GetType() == typeof(RoadStructureSO))
             {
                 roadProvider = (RoadStructureSO)nearbyStructure;
+                return;
+            }
+        }
+    }
+
+    private void AddWaterProvider(IEnumerable<StructureBaseSO> structures)
+    {
+        if (waterProvider != null)
+            return;
+        foreach (var nearbyStructure in structures)
+        {
+            if (nearbyStructure.GetType() == typeof(SingleFacilitySO) && ((SingleFacilitySO)nearbyStructure).facilityType == FacilityType.Water)
+            {
+                waterProvider = (SingleFacilitySO)nearbyStructure;
+                return;
+            }
+        }
+    }
+
+    private void AddPowerProvider(IEnumerable<StructureBaseSO> structures)
+    {
+        if (powerProvider != null)
+            return;
+        foreach (var nearbyStructure in structures)
+        {
+            if (nearbyStructure.GetType() == typeof(SingleFacilitySO) && ((SingleFacilitySO)nearbyStructure).facilityType == FacilityType.Power)
+            {
+                powerProvider = (SingleFacilitySO)nearbyStructure;
                 return;
             }
         }

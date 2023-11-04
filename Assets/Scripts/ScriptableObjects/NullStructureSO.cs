@@ -10,7 +10,7 @@ public class NullStructureSO : StructureBaseSO
         prefab = null;
         placementCost = 0;
         upkeepCost = 0;
-        income = 0;
+        Income = 0;
         requireRoadAccess = false;
         requireWater = false;
         requirePower = false;

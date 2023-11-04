@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     public BuildingManager BuildingManager { get => buildingManager; set => buildingManager = value;  }
     public IResourceManager ResourceManager { get => resourceManager; }
     public bool StartAgain { get => startAgain; set => startAgain = value; }
+    public bool StartFirstTime { get => startFirstTime; set => startFirstTime = value; }
 
     public GameObject resourceManagerGameObject;
     private IResourceManager resourceManager;
@@ -36,6 +37,8 @@ public class GameManager : MonoBehaviour
     private bool startAgain = false;
 
     public WorldManager worldManager;
+
+    private bool startFirstTime = true;
 
     private void Awake()
     {
@@ -47,6 +50,7 @@ public class GameManager : MonoBehaviour
 #if (UNITY_IOS || UNITY_ANDROID)
 
 #endif
+        startFirstTime = false;
         placementManager = placementManagerGameObject.GetComponent<PlacementManager>();
         placementManager.PreparePlacementManager(worldManager);
         resourceManager = resourceManagerGameObject.GetComponent<IResourceManager>();
@@ -74,10 +78,11 @@ public class GameManager : MonoBehaviour
     {
         if(StartAgain)
         {
-            buildingManager.grid = worldManager.Grid;
-            buildingManager.placementManager = placementManager;
-            buildingManager.resourceManager = resourceManager;
-            buildingManager.structureRepository = structureRepository;
+            buildingManager = new BuildingManager(worldManager.Grid, placementManager, structureRepository, ResourceManager);
+            //buildingManager.grid = worldManager.Grid;
+            //buildingManager.placementManager = placementManager;
+            //buildingManager.resourceManager = resourceManager;
+            //buildingManager.structureRepository = structureRepository;
             PrepareStates();
             buildingManager.ConfirmModificationsOnStart();
             worldManager.PrepareTreesAgain();
