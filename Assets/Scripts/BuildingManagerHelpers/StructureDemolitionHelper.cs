@@ -50,7 +50,7 @@ public class StructureDemolitionHelper : StructureModificationHelper
             Type dataType = data.GetType();
             if (dataType == typeof(ZoneStructureSO) && ((ZoneStructureSO)data).zoneType == ZoneType.Residential)
             {
-                resourceManager.ReducePopulation(1);
+                resourceManager.ReducePopulation(data.structureRange);
             }
             StructureEconomyManager.DemolitionStructureLogic(dataType, gridPosition, grid);
 

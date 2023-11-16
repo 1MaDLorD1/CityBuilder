@@ -114,6 +114,7 @@ public class SceneLoadManager : MonoBehaviour, ISceneLoadHandler<(float, float, 
         YandexGame.GetDataEvent += LoadDataOnStart;
         _mainMenuButton.MainMenuButtonPressed += SaveData;
         _mainMenuButton.AgainButtonPressed += ReloadData;
+        _uiController.ConfirmButtonPressed += SaveData;
     }
 
     private void OnDisable()
@@ -122,7 +123,7 @@ public class SceneLoadManager : MonoBehaviour, ISceneLoadHandler<(float, float, 
         YandexGame.GetDataEvent -= LoadDataOnStart;
         _mainMenuButton.MainMenuButtonPressed -= SaveData;
         _mainMenuButton.AgainButtonPressed -= ReloadData;
-        //SaveData();
+        _uiController.ConfirmButtonPressed -= SaveData;
     }
 
     private void ReloadData()
@@ -158,7 +159,6 @@ public class SceneLoadManager : MonoBehaviour, ISceneLoadHandler<(float, float, 
 
     private void SaveData()
     {
-        Debug.Log(_gameManager.BuildingManager);
         YandexGame.savesData.taxesValue = _resourceManager.TaxesManager.Taxes;
         YandexGame.savesData.moneyHelper = _resourceManager.MoneyHelper;
         YandexGame.savesData.populationHelper = _resourceManager.PopulationHelper;

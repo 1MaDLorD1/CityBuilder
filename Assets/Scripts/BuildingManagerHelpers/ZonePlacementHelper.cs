@@ -21,17 +21,35 @@ public class ZonePlacementHelper : StructureModificationHelper
 
     public override void PrepareStructureForPlacement(Vector3 inputPosition, string structureName, StructureType structureType)
     {
-        base.PrepareStructureForPlacement(inputPosition, structureName, structureType);
-        Vector3 gridPositon = grid.CalculateGridPosition(inputPosition);
-        if (startPositionAcquired == false && grid.IsCellTaken(gridPositon) == false)
+        if (((ResourceManager)resourceManager).uiController.QuestsComplete)
         {
-            startPosition = gridPositon;
-            startPositionAcquired = true;
-        }
+            base.PrepareStructureForPlacement(inputPosition, structureName, structureType);
+            Vector3 gridPositon = grid.CalculateGridPosition(inputPosition);
+            if (startPositionAcquired == false && grid.IsCellTaken(gridPositon) == false)
+            {
+                startPosition = gridPositon;
+                startPositionAcquired = true;
+            }
 
-        if (startPositionAcquired && (previousEndPositon == null || ZoneCalculator.CheckIfPositionHasChanged(gridPositon, previousEndPositon.Value, grid)) && grid.IsCellTaken(gridPositon) == false)
+            if (startPositionAcquired && (previousEndPositon == null || ZoneCalculator.CheckIfPositionHasChanged(gridPositon, previousEndPositon.Value, grid)) && grid.IsCellTaken(gridPositon) == false)
+            {
+                PlaceNewZoneUpTo(gridPositon);
+            }
+        }
+        else
         {
-            PlaceNewZoneUpTo(gridPositon);
+            base.PrepareStructureForPlacement(inputPosition, structureName, structureType);
+            Vector3 gridPositon = grid.CalculateGridPosition(inputPosition);
+            if (startPositionAcquired == false && grid.IsCellTaken(gridPositon) == false)
+            {
+                startPosition = gridPositon;
+                startPositionAcquired = true;
+            }
+
+            if (startPositionAcquired && (previousEndPositon == null || ZoneCalculator.CheckIfPositionHasChanged(gridPositon, previousEndPositon.Value, grid)) && grid.IsCellTaken(gridPositon) == false)
+            {
+                PlaceNewZoneUpTo(startPosition);
+            }
         }
     }
 
@@ -105,6 +123,18 @@ public class ZonePlacementHelper : StructureModificationHelper
 
     public override void ConfirmModifications()
     {
+        moneySpend = 0;
+
+        if (structuresToBeModified.Count > 0 && !((ResourceManager)resourceManager).uiController.QuestsComplete && !((ResourceManager)resourceManager).uiController.FiveQuestOpen)
+        {
+            ((ResourceManager)resourceManager).uiController.ShowSixQuest();
+        }
+        else if(structuresToBeModified.Count > 0 && !((ResourceManager)resourceManager).uiController.QuestsComplete)
+        {
+            ((ResourceManager)resourceManager).uiController.IsShopBuy = true;
+            ((ResourceManager)resourceManager).uiController.RemoveShopButtonInPanel(((ResourceManager)resourceManager).uiController.zonesPanel.transform);
+        }
+
         if (structureData.GetType() == typeof(ZoneStructureSO) && ((ZoneStructureSO)structureData).zoneType == ZoneType.Residential)
         {
             resourceManager.AddToPopulation(structureData.structureRange * structuresOldQuantity);

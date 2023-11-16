@@ -29,7 +29,7 @@ namespace YG
         public List<string> treesPositions = new List<string>();
         public List<string> treesRemovePositions = new List<string>();
         public bool startAgain;
-        public Dictionary<Vector3Int, (string, StructureBaseSO)>  allStructuresPositions = new Dictionary<Vector3Int, (string, StructureBaseSO)>();
+        public Dictionary<Vector3Int, (string, StructureBaseSO)> allStructuresPositions = new Dictionary<Vector3Int, (string, StructureBaseSO)>();
         public bool questsComplete;
         public bool startFirstTime;
         public bool againButtonPressed;

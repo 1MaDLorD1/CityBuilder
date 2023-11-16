@@ -72,6 +72,7 @@ public class UiController : MonoBehaviour
     public UnityAction ContinueButtonPressed;
     public UnityAction MenuButtonPressed;
     public UnityAction ContinueMenuButtonPressed;
+    public UnityAction ConfirmButtonPressed;
 
     private bool _pause = false;
 
@@ -222,22 +223,77 @@ public class UiController : MonoBehaviour
         return structurePanelHelper.gameObject.activeSelf;
     }
 
+    public void ShowSixQuest()
+    {
+        _nubiksQuests[5].SetActive(true);
+        RemoveButtonsInPanel(zonesPanel.transform); 
+        RemoveButtonsInPanel(facilitiesPanel.transform);
+        RemoveButtonsInPanel(roadsPanel.transform);
+        cancleActionBtn.onClick.AddListener(OnCancleActionCallback);
+        FiveQuestOpen = true;
+    }
+
+    public void ShowSevenQuest()
+    {
+        ReturnButtonsInPanel(zonesPanel.transform, OnBuildAreaCallback);
+        ReturnButtonsInPanel(facilitiesPanel.transform, OnBuildSingleStructureCallback);
+        ReturnButtonsInPanel(roadsPanel.transform, OnBuildRoadCallback);
+        _nubiksQuests[6].SetActive(true);
+    }
+
+    public void RemoveShopButtonInPanel(Transform panelTransform)
+    {
+        for (int i = 0; i < panelTransform.childCount; i++)
+        {
+            var button = panelTransform.GetChild(i).GetComponent<Button>();
+            if (button != null)
+            {
+                var buttonTexts = button.GetComponentsInChildren<TextMeshProUGUI>();
+                if (buttonTexts[0].text == "Магазин")
+                {
+                    button.onClick.RemoveAllListeners();
+                }
+            }
+        }
+    }
+
+    public void RemoveWaterButtonInPanel(Transform panelTransform)
+    {
+        for (int i = 0; i < panelTransform.childCount; i++)
+        {
+            var button = panelTransform.GetChild(i).GetComponent<Button>();
+            if (button != null)
+            {
+                var buttonTexts = button.GetComponentsInChildren<TextMeshProUGUI>();
+                if (buttonTexts[0].text == "Источник воды")
+                {
+                    button.onClick.RemoveAllListeners();
+                }
+            }
+        }
+    }
+
+    public void RemoveRoadButtonInPanel(Transform panelTransform)
+    {
+        for (int i = 0; i < panelTransform.childCount; i++)
+        {
+            var button = panelTransform.GetChild(i).GetComponent<Button>();
+            if (button != null)
+            {
+                var buttonTexts = button.GetComponentsInChildren<TextMeshProUGUI>();
+                if (buttonTexts[0].text == "Дорога")
+                {
+                    button.onClick.RemoveAllListeners();
+                }
+            }
+        }
+    }
+
     private void OnConfirmActionCallback()
     {
-        if (!QuestsComplete && !fiveQuestOpen)
-        {
-            _nubiksQuests[5].SetActive(true);
-            cancleActionBtn.onClick.AddListener(OnCancleActionCallback);
-            fiveQuestOpen = true;
-        }
-        else if(openSevenQuest)
-        {
-            _nubiksQuests[6].SetActive(true);
-            openSevenQuest = false;
-        }
-
         cancleActionPanel.SetActive(false);
         OnConfirmActionHandler?.Invoke();
+        ConfirmButtonPressed?.Invoke();
     }
 
     private void OnCloseMenuHandler()
@@ -264,8 +320,6 @@ public class UiController : MonoBehaviour
     {
         AudioManager.Instance.PlayButtonClickedSound();
         buildingMenuPanel.SetActive(true);
-
-        Debug.Log(QuestsComplete + " " + buildAreaAlreadyOpened);
 
         if (!QuestsComplete && !buildAreaAlreadyOpened)
         {
@@ -340,6 +394,35 @@ public class UiController : MonoBehaviour
         }
     }
 
+    private void RemoveButtonsInPanel(Transform panelTransform)
+    {
+        for (int i = 0; i < panelTransform.childCount; i++)
+        {
+            var button = panelTransform.GetChild(i).GetComponent<Button>();
+            if (button != null)
+            {
+                var buttonTexts = button.GetComponentsInChildren<TextMeshProUGUI>();
+                if (buttonTexts[0].text != "Магазин" && buttonTexts[0].text != "Дорога" && buttonTexts[0].text != "Источник воды")
+                {
+                    button.onClick.RemoveAllListeners();
+                }
+            }
+        }
+    }
+
+    private void ReturnButtonsInPanel(Transform panelTransform, Action<string> callback)
+    {
+        for (int i = 0; i < panelTransform.childCount; i++)
+        {
+            var button = panelTransform.GetChild(i).GetComponent<Button>();
+            if (button != null)
+            {
+                var buttonTexts = button.GetComponentsInChildren<TextMeshProUGUI>();
+                button.onClick.AddListener(() => callback(button.GetComponentsInChildren<TextMeshProUGUI>()[0].text));
+            }
+        }
+    }
+
     public void SetMoneyValue(int money)
     {
         moneyValue.text = money + "";
@@ -371,13 +454,14 @@ public class UiController : MonoBehaviour
         structurePanelHelper.DisplayFacilityStructureInfo(data);
     }
 
-    private bool isShopBuy = false;
-    private bool isRoadBuy = false;
-    private bool isWaterBuy = false;
+    public bool IsShopBuy = false;
+    public bool IsRoadBuy = false;
+    public bool IsWaterBuy = false;
     private bool buildAreaAlreadyOpened = false;
     private bool sixQuestOpen = false;
-    private bool fiveQuestOpen = false;
-    private bool openSevenQuest = false;
+    public bool FiveQuestOpen = false;
+    public bool OpenSevenQuest = false;
+    public bool BuildFirstStructure = false;
 
     private void OnBuildAreaCallback(string nameOfStructure)
     {
@@ -389,16 +473,6 @@ public class UiController : MonoBehaviour
             CreateButtonsInPanelAgain(facilitiesPanel.transform, structureRepository.GetSingleStructureNames(), structureRepository.GetSingleStructureCosts(), OnBuildSingleStructureCallback);
             CreateButtonsInPanelAgain(roadsPanel.transform, new List<string>() { structureRepository.GetRoadStructureName() }, new List<int>() { structureRepository.GetRoadStructureCost() }, OnBuildRoadCallback);
             buildAreaAlreadyOpened = true;
-        }
-        else if(!QuestsComplete && buildAreaAlreadyOpened && !sixQuestOpen)
-        {
-            if(nameOfStructure == "Магазин")
-                isShopBuy = true;
-            if(isWaterBuy && isRoadBuy)
-            {
-                openSevenQuest = true;
-                sixQuestOpen = true;
-            }
         }
 
         PrepareUIForBuilding();
@@ -416,31 +490,12 @@ public class UiController : MonoBehaviour
 
     private void OnBuildRoadCallback(string nameOfStructure)
     {
-        if (!QuestsComplete && !sixQuestOpen)
-        {
-            isRoadBuy = true;
-            if (isWaterBuy && isShopBuy)
-            {
-                openSevenQuest = true;
-                sixQuestOpen = true;
-            }
-        }
         PrepareUIForBuilding();
         OnBuildRoadHandler?.Invoke(nameOfStructure);
     }
 
     private void OnBuildSingleStructureCallback(string nameOfStructure)
     {
-        if (!QuestsComplete && !sixQuestOpen)
-        {
-            if (nameOfStructure == "Источник воды")
-                isWaterBuy = true;
-            if (isShopBuy && isRoadBuy)
-            {
-                openSevenQuest = true;
-                sixQuestOpen = true;
-            }
-        }
         PrepareUIForBuilding();
         OnBuildSingleStructureHandler?.Invoke(nameOfStructure);
     }

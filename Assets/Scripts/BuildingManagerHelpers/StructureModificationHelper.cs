@@ -36,6 +36,12 @@ public abstract class StructureModificationHelper
 
     public virtual void ConfirmModifications()
     {
+        if(((ResourceManager)resourceManager).uiController.IsWaterBuy && ((ResourceManager)resourceManager).uiController.IsShopBuy && ((ResourceManager)resourceManager).uiController.IsRoadBuy && !((ResourceManager)resourceManager).uiController.OpenSevenQuest)
+        {
+            ((ResourceManager)resourceManager).uiController.OpenSevenQuest = true;
+            ((ResourceManager)resourceManager).uiController.ShowSevenQuest();
+        }
+
         placementManager.PlaceStructuresOnTheMap(structuresToBeModified.Values);
         Type structureType = structureData.GetType();
         foreach (var keyValuePair in structuresToBeModified)

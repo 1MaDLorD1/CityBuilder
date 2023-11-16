@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Plugins/TypedScenes/Samples/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
-    path: Assets/YandexGame/Example/Scenes/ExampleYG_Two.unity
-    guid: b366c208bc7e0cc48bcf6a38216f2a82
+  - enabled: 0
+    path: Assets/YandexGame/Example/Scenes/ExampleYG.unity
+    guid: e49bf7e58fdb4db4c9df51f0ddb8f327
   m_configObjects: {}

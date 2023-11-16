@@ -50,4 +50,15 @@ public class SingleStructurePlacementHelper : StructureModificationHelper
         base.CancleModifications();
     }
 
+    public override void ConfirmModifications()
+    {
+        if (structuresToBeModified.Count > 0 && !((ResourceManager)resourceManager).uiController.QuestsComplete && ((ResourceManager)resourceManager).uiController.FiveQuestOpen)
+        {
+            ((ResourceManager)resourceManager).uiController.IsWaterBuy = true;
+            ((ResourceManager)resourceManager).uiController.RemoveWaterButtonInPanel(((ResourceManager)resourceManager).uiController.facilitiesPanel.transform);
+        }
+
+        base.ConfirmModifications();
+    }
+
 }

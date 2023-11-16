@@ -6,29 +6,57 @@ using UnityEngine;
 public class RoadPlacementModificationHelper : StructureModificationHelper
 {
     Dictionary<Vector3Int, GameObject> existingRoadStructuresToModify = new Dictionary<Vector3Int, GameObject>();
+
+    Vector3Int roadPosition;
+
     public RoadPlacementModificationHelper(StructureRepository structureRepository, GridStructure grid, IPlacementManager placementManager, IResourceManager resourceManager) : base(structureRepository, grid, placementManager, resourceManager)
     {
     }
 
     public override void PrepareStructureForPlacement(Vector3 inputPosition, string structureName, StructureType structureType)
     {
-        base.PrepareStructureForPlacement(inputPosition, structureName, structureType);
-        Vector3 gridPosition = grid.CalculateGridPosition(inputPosition);
-        if (grid.IsCellTaken(gridPosition) == false)
+        if (((ResourceManager)resourceManager).uiController.QuestsComplete)
         {
-            var gridPositionInt = Vector3Int.FloorToInt(gridPosition);
-            var roadStructure = RoadManager.GetCorrectRoadPrefab(gridPosition, structureData, structuresToBeModified, grid);
-            if (structuresToBeModified.ContainsKey(gridPositionInt))
+            base.PrepareStructureForPlacement(inputPosition, structureName, structureType);
+            Vector3 gridPosition = grid.CalculateGridPosition(inputPosition);
+            if (grid.IsCellTaken(gridPosition) == false)
             {
-                RevokeRoadPlacementAt(gridPositionInt);
-                resourceManager.AddMoney(structureData.placementCost);
+                var gridPositionInt = Vector3Int.FloorToInt(gridPosition);
+                var roadStructure = RoadManager.GetCorrectRoadPrefab(gridPosition, structureData, structuresToBeModified, grid);
+                if (structuresToBeModified.ContainsKey(gridPositionInt))
+                {
+                    RevokeRoadPlacementAt(gridPositionInt);
+                    resourceManager.AddMoney(structureData.placementCost);
+                }
+                else if (resourceManager.CanIBuyIt(structureData.placementCost))
+                {
+                    PlaceNewRoadAt(roadStructure, gridPosition, gridPositionInt);
+                    resourceManager.SpendMoney(structureData.placementCost);
+                }
+                AdjustNeighboursIfAreRoadStructures(gridPosition);
             }
-            else if(resourceManager.CanIBuyIt(structureData.placementCost))
+        }
+        else
+        {
+            base.PrepareStructureForPlacement(inputPosition, structureName, structureType);
+            Vector3 gridPosition = grid.CalculateGridPosition(inputPosition);
+            if (grid.IsCellTaken(gridPosition) == false)
             {
-                PlaceNewRoadAt(roadStructure, gridPosition, gridPositionInt);
-                resourceManager.SpendMoney(structureData.placementCost);
+                var gridPositionInt = Vector3Int.FloorToInt(gridPosition);
+                var roadStructure = RoadManager.GetCorrectRoadPrefab(gridPosition, structureData, structuresToBeModified, grid);
+                if (structuresToBeModified.Count > 0)
+                {
+                    RevokeRoadPlacementAt(roadPosition);
+                    resourceManager.AddMoney(structureData.placementCost);
+                }
+                if (resourceManager.CanIBuyIt(structureData.placementCost))
+                {
+                    roadPosition = gridPositionInt;
+                    PlaceNewRoadAt(roadStructure, gridPosition, gridPositionInt);
+                    resourceManager.SpendMoney(structureData.placementCost);
+                }
+                AdjustNeighboursIfAreRoadStructures(gridPosition);
             }
-            AdjustNeighboursIfAreRoadStructures(gridPosition);
         }
     }
 
@@ -98,6 +126,12 @@ public class RoadPlacementModificationHelper : StructureModificationHelper
 
     public override void ConfirmModifications()
     {
+        if (structuresToBeModified.Count > 0 && !((ResourceManager)resourceManager).uiController.QuestsComplete && ((ResourceManager)resourceManager).uiController.FiveQuestOpen)
+        {
+            ((ResourceManager)resourceManager).uiController.IsRoadBuy = true;
+            ((ResourceManager)resourceManager).uiController.RemoveRoadButtonInPanel(((ResourceManager)resourceManager).uiController.roadsPanel.transform);
+        }
+
         RoadManager.ModifyRoadCellsOnTheGrid(existingRoadStructuresToModify, structureData, structuresToBeModified, grid, placementManager);
 
         base.ConfirmModifications();
